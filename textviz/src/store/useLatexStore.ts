@@ -9,8 +9,21 @@ interface LatexStore {
 export const useLatexStore = create<LatexStore>()(
   persist(
     (set) => ({
-      latex: "\\documentclass{article}\n\n\\begin{document}\n\n\\title{Sample LaTeX Document}\n\\author{TextViz User}\n\\maketitle\n\n\\section{Introduction}\nThis is a sample document with a mathematical formula:\n\n$$ E = mc^2 $$
-\n\\end{document}",
+      // Default LaTeX document shown in the editor
+      latex: String.raw`\documentclass{article}
+
+\begin{document}
+
+\title{Sample LaTeX Document}
+\author{TextViz User}
+\maketitle
+
+\section{Introduction}
+This is a sample document with a mathematical formula:
+
+$$ E = mc^2 $$
+
+\end{document}`,
       setLatex: (latex) => set({ latex }),
     }),
     {

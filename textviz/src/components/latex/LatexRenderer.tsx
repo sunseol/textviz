@@ -15,6 +15,7 @@ export function LatexRenderer({ content }: LatexRendererProps) {
   return (
     <div className="flex justify-center min-h-full bg-gray-100 dark:bg-neutral-900 py-8 overflow-auto">
       <div 
+        id="latex-preview"
         className="bg-white dark:bg-neutral-800 shadow-lg text-black dark:text-white prose prose-neutral dark:prose-invert max-w-none"
         style={{
             width: '210mm',

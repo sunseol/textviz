@@ -53,16 +53,11 @@ export default function LatexPage() {
         <ResizableSplitPane
           initialLeftWidth={40}
           left={
-            <div className="flex flex-col h-full">
+            <>
               <SymbolPalette onInsert={handleSymbolInsert} />
-              <div className="flex-1 relative">
+              <div style={{ height: 'calc(100vh - 3.5rem - 140px)' }}>
                 <MonacoEditorWrapper
-                  language="markdown" // Use markdown for syntax highlighting in LaTeX (Monaco has limited native LaTeX support, or use 'latex' if available but 'markdown' is often better for mixed content)
-                  // Or better: we can stick to 'markdown' or try to find if 'latex' works well. Monaco usually treats 'latex' as plain text or requires custom language definition.
-                  // Let's use 'markdown' as it highlights commands partially, or plain text. 
-                  // Actually, let's try 'latex' first, if not supported it falls back.
-                  // Update: Monaco built-in languages include 'stex' (for LaTeX). Let's use that if possible, or 'markdown'.
-                  // Let's use 'markdown' for now as it's safer and supports mixed content which KaTeX renderers handle.
+                  language="markdown"
                   value={latex}
                   onChange={handleEditorChange}
                   onMount={handleEditorDidMount}
@@ -72,7 +67,7 @@ export default function LatexPage() {
                   }}
                 />
               </div>
-            </div>
+            </>
           }
           right={
             <LatexRenderer content={latex} />

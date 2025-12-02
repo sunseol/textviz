@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Moon, Sun, Github } from 'lucide-react';
+import { Moon, Sun, Github, Download } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { useExportImage } from '@/hooks/useExportImage';
 
 export function Header() {
   const pathname = usePathname();
   const { isDarkMode, toggleDarkMode } = useAppStore();
+  const { downloadImage } = useExportImage();
 
   const navItems = [
     { name: 'Markdown', href: '/markdown' },
@@ -15,12 +17,21 @@ export function Header() {
     { name: 'JSON Builder', href: '/json-builder' },
   ];
 
+  const getExportConfig = () => {
+    if (pathname === '/markdown') return { id: 'markdown-preview', name: 'markdown-export' };
+    if (pathname === '/latex') return { id: 'latex-preview', name: 'latex-export' };
+    if (pathname === '/mermaid') return { id: 'mermaid-preview', name: 'mermaid-export' };
+    return null;
+  };
+
+  const exportConfig = getExportConfig();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block text-lg">
+            <span className="hidden font-bold sm:inline-block text-2xl tracking-wide" style={{ fontFamily: 'var(--font-bona-nova-sc)' }}>
               TextViz
             </span>
           </Link>
@@ -45,6 +56,15 @@ export function Header() {
             {/* Optional: Add search or command menu here later */}
           </div>
           <nav className="flex items-center space-x-2">
+            {exportConfig && (
+                <button
+                    onClick={() => downloadImage(exportConfig.id, exportConfig.name)}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 mr-2 border border-input bg-transparent shadow-sm"
+                >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                </button>
+            )}
             <Link
               href="https://github.com"
               target="_blank"

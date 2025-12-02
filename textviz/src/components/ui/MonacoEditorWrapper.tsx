@@ -40,19 +40,19 @@ export function MonacoEditorWrapper({
   };
 
   return (
-    <div className="h-full w-full relative group">
-       <Editor
-        loading={
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-                <Loader2 className="h-6 w-6 animate-spin mr-2" />
-                <span>Loading Editor...</span>
-            </div>
-        }
-        theme={editorTheme}
-        options={defaultOptions}
-        onMount={handleEditorDidMount}
-        {...props}
-      />
-    </div>
+    <Editor
+      height="100%"
+      width="100%"
+      loading={
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+              <Loader2 className="h-6 w-6 animate-spin mr-2" />
+              <span>Loading Editor...</span>
+          </div>
+      }
+      theme={editorTheme}
+      options={defaultOptions}
+      onMount={handleEditorDidMount}
+      {...props}
+    />
   );
 }

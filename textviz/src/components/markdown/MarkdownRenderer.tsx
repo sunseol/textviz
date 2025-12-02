@@ -13,7 +13,7 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
-    <div className="prose prose-neutral dark:prose-invert max-w-none p-8 min-h-full bg-background">
+    <div id="markdown-preview" className="prose prose-neutral dark:prose-invert max-w-none p-8 min-h-full bg-background">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}

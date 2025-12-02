@@ -57,22 +57,22 @@ export function ResizableSplitPane({
   }, [isDragging, minLeftWidth, maxLeftWidth]);
 
   return (
-    <div ref={containerRef} className="flex h-full w-full overflow-hidden">
-      <div style={{ width: `${leftWidth}%` }} className="h-full overflow-hidden">
+    <div ref={containerRef} className="grid w-full overflow-hidden" style={{ gridTemplateColumns: `${leftWidth}% 4px 1fr`, gridTemplateRows: '1fr', height: '100%' }}>
+      <div className="overflow-hidden flex flex-col" style={{ height: '100%' }}>
         {left}
       </div>
 
       <div
         className={cn(
-          "w-1 cursor-col-resize bg-border hover:bg-primary/50 active:bg-primary flex items-center justify-center transition-colors z-10 relative",
+          "cursor-col-resize bg-border hover:bg-primary/50 active:bg-primary flex items-center justify-center transition-colors z-10 relative",
           isDragging && "bg-primary"
         )}
         onMouseDown={handleMouseDown}
       >
-        <GripVertical className="h-4 w-4 text-muted-foreground/50 absolute" />
+        <GripVertical className="h-4 w-4 text-muted-foreground/50 absolute pointer-events-none" />
       </div>
 
-      <div style={{ width: `${100 - leftWidth}%` }} className="h-full overflow-hidden bg-background">
+      <div className="overflow-hidden bg-background" style={{ height: '100%' }}>
         {right}
       </div>
     </div>

@@ -6,7 +6,7 @@ interface LayoutWrapperProps {
 
 export function LayoutWrapper({ children }: LayoutWrapperProps) {
   return (
-    <main className="flex-1 w-full h-[calc(100vh-3.5rem)] overflow-hidden">
+    <main className="flex-1 w-full h-[calc(100vh-3.5rem)] min-h-0 overflow-hidden">
       {children}
     </main>
   );

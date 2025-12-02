@@ -10,7 +10,7 @@ interface MarkdownToolbarProps {
 
 export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
   return (
-    <div className="flex items-center space-x-1 border-b p-2 bg-muted/50">
+    <div className="flex items-center space-x-1 border-b p-2 bg-muted/50 shrink-0">
       <Button
         variant="ghost"
         size="icon"

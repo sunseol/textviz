@@ -1,13 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { FileText, GitGraph, Sigma } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
+import { useEffect, useState } from "react";
+import { FileText, GitGraph, Sigma, Plus, ChevronRight } from "lucide-react";
 
 import { useMarkdownStore } from "@/store/useMarkdownStore";
 import { useLatexStore } from "@/store/useLatexStore";
@@ -20,44 +15,41 @@ interface DocumentSidebarProps {
   active: DocKind;
 }
 
-const gradients: Record<DocKind, string> = {
-  markdown: "from-blue-500/80 via-cyan-400/80 to-indigo-500/80",
-  latex: "from-emerald-500/80 via-teal-400/80 to-green-500/80",
-  mermaid: "from-purple-500/80 via-fuchsia-400/80 to-indigo-500/80",
+const docConfig: Record<DocKind, { 
+  icon: typeof FileText; 
+  color: string; 
+  bgColor: string;
+  label: string;
+}> = {
+  markdown: { 
+    icon: FileText, 
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/50",
+    label: "MD"
+  },
+  latex: { 
+    icon: Sigma, 
+    color: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-50 dark:bg-emerald-950/50",
+    label: "TEX"
+  },
+  mermaid: { 
+    icon: GitGraph, 
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-50 dark:bg-purple-950/50",
+    label: "MMD"
+  },
 };
 
-const iconMap: Record<DocKind, typeof FileText> = {
-  markdown: FileText,
-  latex: Sigma,
-  mermaid: GitGraph,
-};
-
-function trimContent(raw: string, maxChars = 420) {
-  if (!raw?.trim()) return "No content yet.";
-  const normalized = raw.replace(/\s+/g, " ").trim();
-  return normalized.length > maxChars
-    ? `${normalized.slice(0, maxChars)}…`
-    : normalized;
+function getPreview(content: string, maxLength = 60): string {
+  if (!content?.trim()) return "Empty document";
+  const cleaned = content.replace(/[#*`>\-\[\]()]/g, '').replace(/\s+/g, ' ').trim();
+  return cleaned.length > maxLength ? cleaned.slice(0, maxLength) + '...' : cleaned;
 }
 
-function MarkdownPeek({ content }: { content: string }) {
-  const preview = useMemo(() => trimContent(content), [content]);
-  return (
-    <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
-      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
-        {preview}
-      </ReactMarkdown>
-    </div>
-  );
-}
-
-function PlainPeek({ content }: { content: string }) {
-  const preview = trimContent(content);
-  return (
-    <p className="text-[12px] leading-5 text-muted-foreground font-mono whitespace-pre-wrap">
-      {preview}
-    </p>
-  );
+function getWordCount(content: string): number {
+  if (!content?.trim()) return 0;
+  return content.trim().split(/\s+/).length;
 }
 
 export function DocumentSidebar({ active }: DocumentSidebarProps) {
@@ -67,9 +59,10 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   const mermaid = useMermaidStore((state) => state.mermaidCode);
 
   useEffect(() => setMounted(true), []);
+  
   if (!mounted) {
     return (
-      <aside className="h-full rounded-2xl border border-white/40 bg-white/60 dark:border-white/10 dark:bg-neutral-950/50 backdrop-blur-xl" />
+      <aside className="h-full rounded-xl bg-white dark:bg-neutral-900" />
     );
   }
 
@@ -80,54 +73,95 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   ];
 
   return (
-    <aside className="flex h-full flex-col gap-4 rounded-2xl border border-white/40 bg-white/70 px-4 py-4 shadow-[0_20px_60px_rgba(0,0,0,0.14)] backdrop-blur-2xl dark:border-white/10 dark:bg-neutral-950/60">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+    <aside className="flex h-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3 dark:border-neutral-800">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
           Documents
-        </span>
-        <span className="text-[11px] text-muted-foreground/80">Preview</span>
+        </h2>
+        <button className="flex h-6 w-6 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300">
+          <Plus className="h-4 w-4" />
+        </button>
       </div>
-      <div className="space-y-3 overflow-auto pr-1">
-        {docs.map((doc) => {
-          const Icon = iconMap[doc.id];
-          return (
-            <Link
-              key={doc.id}
-              href={doc.href}
-            className={cn(
-              "group block rounded-2xl border border-white/40 bg-white/80 p-3 backdrop-blur-xl transition-all duration-150 dark:border-white/10 dark:bg-neutral-950/70",
-              "shadow-[0_12px_30px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(0,0,0,0.16)]",
-              active === doc.id && "ring-2 ring-offset-2 ring-offset-transparent ring-violet-400/70 dark:ring-violet-500/70"
-            )}
-          >
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-inner",
-                    `bg-gradient-to-br ${gradients[doc.id]}`
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between text-sm font-semibold">
-                    <span>{doc.title}</span>
-                    <span className="text-[11px] font-medium text-muted-foreground">Draft</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">Autosaved</p>
-                </div>
-              </div>
-              <div className="relative mt-3 max-h-36 overflow-hidden rounded-xl border border-white/40 bg-muted/40 p-3 dark:border-white/10 dark:bg-white/[0.03]">
-                {doc.id === "mermaid" ? (
-                  <PlainPeek content={doc.content} />
-                ) : (
-                  <MarkdownPeek content={doc.content} />
+      
+      {/* Document List */}
+      <div className="flex-1 overflow-auto p-2">
+        <div className="space-y-1">
+          {docs.map((doc) => {
+            const config = docConfig[doc.id];
+            const Icon = config.icon;
+            const isActive = active === doc.id;
+            const wordCount = getWordCount(doc.content);
+            const preview = getPreview(doc.content);
+            
+            return (
+              <Link
+                key={doc.id}
+                href={doc.href}
+                className={cn(
+                  "group flex flex-col gap-2 rounded-lg p-3 transition-all duration-150",
+                  isActive 
+                    ? "bg-neutral-100 dark:bg-neutral-800" 
+                    : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                 )}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-background/95 via-background/70 to-transparent dark:from-neutral-950/95 dark:via-neutral-950/60" />
-              </div>
-            </Link>
-          );
-        })}
+              >
+                {/* Top Row */}
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+                    config.bgColor
+                  )}>
+                    <Icon className={cn("h-4 w-4", config.color)} />
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={cn(
+                        "text-sm font-medium truncate",
+                        isActive ? "text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-300"
+                      )}>
+                        {doc.title}
+                      </span>
+                      <ChevronRight className={cn(
+                        "h-4 w-4 shrink-0 transition-transform",
+                        isActive ? "text-neutral-400" : "text-neutral-300 dark:text-neutral-600",
+                        "group-hover:translate-x-0.5"
+                      )} />
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] font-medium text-neutral-400 dark:text-neutral-500">
+                        {wordCount} words
+                      </span>
+                      <span className="text-neutral-300 dark:text-neutral-700">·</span>
+                      <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+                        Draft
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Preview */}
+                <p className={cn(
+                  "text-xs leading-relaxed line-clamp-2 pl-11",
+                  isActive ? "text-neutral-600 dark:text-neutral-400" : "text-neutral-500 dark:text-neutral-500"
+                )}>
+                  {preview}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="border-t border-neutral-100 px-4 py-3 dark:border-neutral-800">
+        <div className="flex items-center justify-between text-[10px] text-neutral-400">
+          <span>3 documents</span>
+          <span className="flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+            Synced
+          </span>
+        </div>
       </div>
     </aside>
   );

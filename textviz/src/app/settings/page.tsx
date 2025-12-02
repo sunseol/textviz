@@ -16,7 +16,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background font-sans antialiased">
       <Header />
-      <main className="container py-12 max-w-2xl">
+      <main className="container mx-auto px-4 md:px-8 py-12 max-w-2xl">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
         
         <div className="space-y-8">

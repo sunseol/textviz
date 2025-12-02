@@ -9,6 +9,7 @@ import { LatexRenderer } from '@/components/latex/LatexRenderer';
 import { SymbolPalette } from '@/components/latex/SymbolPalette';
 import { useLatexStore } from '@/store/useLatexStore';
 import { OnMount } from '@monaco-editor/react';
+import { DocumentSidebar } from '@/components/layout/DocumentSidebar';
 
 export default function LatexPage() {
   const { latex, setLatex } = useLatexStore();
@@ -50,29 +51,32 @@ export default function LatexPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <LayoutWrapper>
-        <ResizableSplitPane
-          initialLeftWidth={40}
-          left={
-            <>
-              <SymbolPalette onInsert={handleSymbolInsert} />
-              <div style={{ height: 'calc(100vh - 3.5rem - 140px)' }}>
-                <MonacoEditorWrapper
-                  language="markdown"
-                  value={latex}
-                  onChange={handleEditorChange}
-                  onMount={handleEditorDidMount}
-                  options={{
-                    minimap: { enabled: false },
-                    wordWrap: 'on',
-                  }}
-                />
-              </div>
-            </>
-          }
-          right={
-            <LatexRenderer content={latex} />
-          }
-        />
+        <div className="grid min-h-[calc(100vh-10rem)] grid-cols-1 gap-5 lg:grid-cols-[280px_1fr]">
+          <DocumentSidebar active="latex" />
+          <div className="relative h-full min-h-[calc(100vh-12rem)] overflow-hidden rounded-3xl border border-white/40 bg-white/80 shadow-[0_22px_70px_rgba(0,0,0,0.18)] backdrop-blur-xl dark:border-white/10 dark:bg-neutral-950/70">
+            <ResizableSplitPane
+              initialLeftWidth={42}
+              left={
+                <div className="flex h-full flex-col">
+                  <SymbolPalette onInsert={handleSymbolInsert} />
+                  <div className="flex-1 min-h-0">
+                    <MonacoEditorWrapper
+                      language="markdown"
+                      value={latex}
+                      onChange={handleEditorChange}
+                      onMount={handleEditorDidMount}
+                      options={{
+                        minimap: { enabled: false },
+                        wordWrap: 'on',
+                      }}
+                    />
+                  </div>
+                </div>
+              }
+              right={<LatexRenderer content={latex} />}
+            />
+          </div>
+        </div>
       </LayoutWrapper>
     </div>
   );

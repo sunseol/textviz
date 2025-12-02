@@ -18,7 +18,7 @@ export default function Home() {
 
       <Header />
 
-      <main className="container py-12 md:py-24 lg:py-32">
+      <main className="container mx-auto px-4 md:px-8 py-12 md:py-24 lg:py-32">
 
         {/* Hero Section */}
 

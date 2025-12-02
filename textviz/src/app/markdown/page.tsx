@@ -9,6 +9,7 @@ import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer';
 import { useMarkdownStore } from '@/store/useMarkdownStore';
 import { MarkdownToolbar } from '@/components/markdown/MarkdownToolbar';
 import { OnMount } from '@monaco-editor/react';
+import { DocumentSidebar } from '@/components/layout/DocumentSidebar';
 
 export default function MarkdownPage() {
   const { markdown, setMarkdown } = useMarkdownStore();
@@ -82,35 +83,72 @@ export default function MarkdownPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex h-screen flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950">
       <Header />
-      <LayoutWrapper>
-        <ResizableSplitPane
-          initialLeftWidth={50}
-          left={
-            <>
-              <MarkdownToolbar onInsert={handleToolbarInsert} />
-              <div style={{ height: 'calc(100vh - 3.5rem - 48px)' }}>
-                <MonacoEditorWrapper
-                  language="markdown"
-                  value={markdown}
-                  onChange={handleEditorChange}
-                  onMount={handleEditorDidMount}
-                  options={{
-                    minimap: { enabled: false },
-                    wordWrap: 'on',
-                  }}
-                />
+      <div className="flex flex-1 gap-4 overflow-hidden p-4">
+        {/* Sidebar */}
+        <div className="hidden w-60 shrink-0 lg:block">
+          <DocumentSidebar active="markdown" />
+        </div>
+        
+        {/* Main Editor Container */}
+        <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-neutral-200/60 bg-white shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
+          {/* Editor Header */}
+          <div className="flex shrink-0 items-center justify-between border-b border-neutral-200 bg-neutral-50/80 px-4 py-2.5 dark:border-neutral-800 dark:bg-neutral-900/80">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <div className="h-3 w-3 rounded-full bg-red-400" />
+                <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                <div className="h-3 w-3 rounded-full bg-green-400" />
               </div>
-            </>
-          }
-          right={
-            <div className="h-full w-full overflow-auto bg-white dark:bg-neutral-900">
-              <MarkdownRenderer content={markdown} />
+              <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                Untitled.md
+              </span>
             </div>
-          }
-        />
-      </LayoutWrapper>
+            <div className="flex items-center gap-2 text-xs text-neutral-400">
+              <span className="rounded bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                Markdown
+              </span>
+              <span>Auto-saved</span>
+            </div>
+          </div>
+          
+          {/* Split Pane */}
+          <div className="flex-1 overflow-hidden">
+            <ResizableSplitPane
+              initialLeftWidth={50}
+                left={
+                <>
+                  <MarkdownToolbar onInsert={handleToolbarInsert} />
+                  <div style={{ height: 'calc(100vh - 160px)' }}>
+                    <MonacoEditorWrapper
+                      language="markdown"
+                      value={markdown}
+                      onChange={handleEditorChange}
+                      onMount={handleEditorDidMount}
+                      options={{
+                        minimap: { enabled: false },
+                        wordWrap: 'on',
+                        lineHeight: 1.7,
+                        fontSize: 14,
+                        padding: { top: 16, bottom: 16 },
+                        renderLineHighlight: 'gutter',
+                        scrollbar: {
+                          verticalScrollbarSize: 8,
+                          horizontalScrollbarSize: 8,
+                        },
+                      }}
+                    />
+                  </div>
+                </>
+              }
+              right={
+                <MarkdownRenderer content={markdown} />
+              }
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -4,13 +4,10 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 interface LatexStore {
   latex: string;
   setLatex: (latex: string) => void;
+  resetLatex: () => void;
 }
 
-export const useLatexStore = create<LatexStore>()(
-  persist(
-    (set) => ({
-      // Default LaTeX document shown in the editor
-      latex: String.raw`\documentclass{article}
+const defaultLatex = String.raw`\documentclass{article}
 
 \begin{document}
 
@@ -23,8 +20,15 @@ This is a sample document with a mathematical formula:
 
 $$ E = mc^2 $$
 
-\end{document}`,
+\end{document}`;
+
+export const useLatexStore = create<LatexStore>()(
+  persist(
+    (set) => ({
+      // Default LaTeX document shown in the editor
+      latex: defaultLatex,
       setLatex: (latex) => set({ latex }),
+      resetLatex: () => set({ latex: defaultLatex }),
     }),
     {
       name: 'textviz-latex-storage',

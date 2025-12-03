@@ -6,23 +6,40 @@ import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { ResizableSplitPane } from '@/components/ui/ResizableSplitPane';
 import { MonacoEditorWrapper } from '@/components/ui/MonacoEditorWrapper';
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer';
-import { useMarkdownStore } from '@/store/useMarkdownStore';
+import { useDocumentStore } from '@/store/useDocumentStore';
+import { useLanguageStore } from '@/store/useLanguageStore';
 import { MarkdownToolbar } from '@/components/markdown/MarkdownToolbar';
 import { OnMount } from '@monaco-editor/react';
 import { DocumentSidebar } from '@/components/layout/DocumentSidebar';
 
 export default function MarkdownPage() {
-  const { markdown, setMarkdown } = useMarkdownStore();
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const [mounted, setMounted] = React.useState(false);
 
+  const documents = useDocumentStore((state) => state.documents);
+  const activeDocumentId = useDocumentStore((state) => state.activeDocumentId);
+  const updateDocument = useDocumentStore((state) => state.updateDocument);
+  const addDocument = useDocumentStore((state) => state.addDocument);
+  const { t } = useLanguageStore();
+  
+  const activeDocument = React.useMemo(() => 
+    documents.find(doc => doc.id === activeDocumentId) || null,
+    [documents, activeDocumentId]
+  );
+
   React.useEffect(() => {
     setMounted(true);
+    // Create initial document if none exists
+    if (documents.filter(d => d.type === 'markdown').length === 0) {
+      addDocument('markdown');
+    }
   }, []);
 
+  const markdown = activeDocument?.type === 'markdown' ? activeDocument.content : '';
+
   const handleEditorChange = (value: string | undefined) => {
-    if (value !== undefined) {
-      setMarkdown(value);
+    if (value !== undefined && activeDocument) {
+      updateDocument(activeDocument.id, value);
     }
   };
 
@@ -102,14 +119,14 @@ export default function MarkdownPage() {
                 <div className="h-3 w-3 rounded-full bg-green-400" />
               </div>
               <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                Untitled.md
+                {activeDocument?.title || 'Untitled.md'}
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-400">
               <span className="rounded bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
-                Markdown
+                {t.nav.markdown}
               </span>
-              <span>Auto-saved</span>
+              <span>{t.editor.autoSaved}</span>
             </div>
           </div>
           

@@ -1,20 +1,26 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Moon, Sun, Github, Download } from 'lucide-react';
+import { Moon, Sun, Github, Download, Languages } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
+import { useLanguageStore } from '@/store/useLanguageStore';
 import { useExportImage } from '@/hooks/useExportImage';
 
 export function Header() {
   const pathname = usePathname();
   const { isDarkMode, toggleDarkMode } = useAppStore();
+  const { language, setLanguage, t } = useLanguageStore();
   const { downloadImage } = useExportImage();
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ko' : 'en');
+  };
+
   const navItems = [
-    { name: 'Markdown', href: '/markdown' },
-    { name: 'LaTeX', href: '/latex' },
-    { name: 'Mermaid', href: '/mermaid' },
-    { name: 'JSON Builder', href: '/json-builder' },
+    { name: t.nav.markdown, href: '/markdown' },
+    { name: t.nav.latex, href: '/latex' },
+    { name: t.nav.mermaid, href: '/mermaid' },
+    { name: t.nav.jsonBuilder, href: '/json-builder' },
   ];
 
   const getExportConfig = () => {
@@ -62,7 +68,7 @@ export function Header() {
                     className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 mr-2 border border-input bg-transparent shadow-sm"
                 >
                     <Download className="h-4 w-4 mr-2" />
-                    Export
+                    {t.header.export}
                 </button>
             )}
             <Link
@@ -74,6 +80,14 @@ export function Header() {
               <Github className="h-5 w-5" />
               <span className="sr-only">GitHub</span>
             </Link>
+            <button
+              onClick={toggleLanguage}
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 py-2 w-9 px-0"
+              title={language === 'en' ? '한국어' : 'English'}
+            >
+              <Languages className="h-5 w-5" />
+              <span className="sr-only">Toggle language</span>
+            </button>
             <button
               onClick={toggleDarkMode}
               className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 py-2 w-9 px-0"

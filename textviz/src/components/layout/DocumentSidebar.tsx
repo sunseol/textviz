@@ -14,34 +14,34 @@ interface DocumentSidebarProps {
   active: DocKind;
 }
 
-const docConfig: Record<DocKind, { 
-  icon: typeof FileText; 
-  color: string; 
+const docConfig: Record<DocKind, {
+  icon: typeof FileText;
+  color: string;
   bgColor: string;
   label: string;
 }> = {
-  markdown: { 
-    icon: FileText, 
+  markdown: {
+    icon: FileText,
     color: "text-blue-600 dark:text-blue-400",
     bgColor: "bg-blue-50 dark:bg-blue-950/50",
     label: "MD"
   },
-  latex: { 
-    icon: Sigma, 
+  latex: {
+    icon: Sigma,
     color: "text-emerald-600 dark:text-emerald-400",
     bgColor: "bg-emerald-50 dark:bg-emerald-950/50",
     label: "TEX"
   },
-  mermaid: { 
-    icon: GitGraph, 
+  mermaid: {
+    icon: GitGraph,
     color: "text-purple-600 dark:text-purple-400",
     bgColor: "bg-purple-50 dark:bg-purple-950/50",
     label: "MMD"
   },
 };
 
-function getPreview(content: string, maxLength = 60): string {
-  if (!content?.trim()) return "Empty document";
+function getPreview(content: string, maxLength = 60): string | null {
+  if (!content?.trim()) return null;
   const cleaned = content.replace(/[#*`>\-\[\]()]/g, '').replace(/\s+/g, ' ').trim();
   return cleaned.length > maxLength ? cleaned.slice(0, maxLength) + '...' : cleaned;
 }
@@ -65,7 +65,7 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   const handleNewDocument = () => {
     addDocument(active as DocumentType);
   };
-  
+
   if (!mounted) {
     return (
       <aside className="h-full rounded-xl bg-white dark:bg-neutral-900" />
@@ -85,12 +85,12 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
         <button
           onClick={handleNewDocument}
           className="flex h-6 w-6 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-300"
-          title="New document"
+          title={t.dialog.createNew}
         >
           <Plus className="h-4 w-4" />
         </button>
       </div>
-      
+
       {/* Document List */}
       <div className="flex-1 overflow-auto p-2">
         {typeDocuments.length === 0 ? (
@@ -162,7 +162,7 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
                     "text-xs leading-relaxed line-clamp-2 pl-11",
                     isActive ? "text-neutral-600 dark:text-neutral-400" : "text-neutral-500 dark:text-neutral-500"
                   )}>
-                    {preview}
+                    {preview || t.editor.empty}
                   </p>
                 </button>
               );
@@ -170,7 +170,7 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
           </div>
         )}
       </div>
-      
+
       {/* Footer */}
       <div className="border-t border-neutral-100 px-4 py-3 dark:border-neutral-800">
         <div className="flex items-center justify-between text-[10px] text-neutral-400">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useLanguageStore } from '@/store/useLanguageStore';
 import { Button } from '@/components/ui/button';
 
 interface SymbolPaletteProps {
@@ -177,6 +178,7 @@ const categories: SymbolCategory[] = [
 
 export function SymbolPalette({ onInsert }: SymbolPaletteProps) {
   const [activeCategory, setActiveCategory] = useState<string>(categories[0].id);
+  const { t } = useLanguageStore();
 
   const activeSymbols =
     categories.find((category) => category.id === activeCategory)?.symbols ?? [];
@@ -193,7 +195,7 @@ export function SymbolPalette({ onInsert }: SymbolPaletteProps) {
             onClick={() => setActiveCategory(category.id)}
             className="shrink-0 h-7 px-2.5 text-xs font-medium"
           >
-            {category.label}
+            {t.latex.categories[category.id as keyof typeof t.latex.categories]}
           </Button>
         ))}
       </div>
@@ -216,7 +218,7 @@ export function SymbolPalette({ onInsert }: SymbolPaletteProps) {
 
       {/* Quick tips */}
       <div className="px-2 pb-2 text-[10px] text-neutral-400 dark:text-neutral-500">
-        <span className="font-medium">Tip:</span> Use <code className="bg-neutral-200 dark:bg-neutral-700 px-1 rounded">$$...$$</code> for display math, <code className="bg-neutral-200 dark:bg-neutral-700 px-1 rounded">$...$</code> for inline
+        <span dangerouslySetInnerHTML={{ __html: t.latex.tip.replace(/\$\$(.*?)\$\$/g, '<code class="bg-neutral-200 dark:bg-neutral-700 px-1 rounded">$$$1$$</code>').replace(/\$(.*?)\$/g, '<code class="bg-neutral-200 dark:bg-neutral-700 px-1 rounded">$$$1$$</code>') }} />
       </div>
     </div>
   );

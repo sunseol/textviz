@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useLanguageStore } from '@/store/useLanguageStore';
 import { Header } from '@/components/layout/Header';
 import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { BlockLibrary } from '@/components/json-builder/BlockLibrary';
@@ -8,6 +9,8 @@ import { BuilderCanvas } from '@/components/json-builder/Canvas';
 import { PropertyEditor } from '@/components/json-builder/PropertyEditor';
 
 export default function JsonBuilderPage() {
+  const { t } = useLanguageStore();
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950">
       <Header />
@@ -23,14 +26,14 @@ export default function JsonBuilderPage() {
                 <div className="h-3 w-3 rounded-full bg-green-400" />
               </div>
               <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                Untitled.json
+                {t.editor.untitled}.json
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-400">
               <span className="rounded bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
-                JSON Builder
+                {t.nav.jsonBuilder}
               </span>
-              <span>Auto-saved</span>
+              <span>{t.editor.autoSaved}</span>
             </div>
           </div>
 

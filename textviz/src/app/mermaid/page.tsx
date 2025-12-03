@@ -19,8 +19,8 @@ export default function MermaidPage() {
   const updateDocument = useDocumentStore((state) => state.updateDocument);
   const addDocument = useDocumentStore((state) => state.addDocument);
   const { t } = useLanguageStore();
-  
-  const activeDocument = React.useMemo(() => 
+
+  const activeDocument = React.useMemo(() =>
     documents.find(doc => doc.id === activeDocumentId) || null,
     [documents, activeDocumentId]
   );
@@ -64,7 +64,7 @@ export default function MermaidPage() {
                 <div className="h-3 w-3 rounded-full bg-green-400" />
               </div>
               <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                {activeDocument?.title || 'Untitled.mmd'}
+                {activeDocument?.title || `${t.editor.untitled}.mmd`}
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-400">

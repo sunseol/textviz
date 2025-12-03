@@ -30,6 +30,7 @@ export interface Translations {
   editor: {
     autoSaved: string;
     untitled: string;
+    empty: string;
   };
 
   // Confirm Dialog
@@ -67,6 +68,32 @@ export interface Translations {
       };
     };
   };
+
+  // JSON Builder
+  jsonBuilder: {
+    library: string;
+    dragOrClick: string;
+    properties: string;
+    noParameters: string;
+    selectBlock: string;
+    jsonOutput: string;
+    blocks: string;
+  };
+
+  // LaTeX
+  latex: {
+    categories: {
+      templates: string;
+      greek: string;
+      operators: string;
+      relations: string;
+      arrows: string;
+      sets: string;
+      matrices: string;
+      accents: string;
+    };
+    tip: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -93,6 +120,7 @@ export const translations: Record<Language, Translations> = {
     editor: {
       autoSaved: 'Auto-saved',
       untitled: 'Untitled',
+      empty: 'Empty',
     },
     dialog: {
       createNewDocument: 'Create New Document?',
@@ -126,6 +154,28 @@ export const translations: Record<Language, Translations> = {
         },
       },
     },
+    jsonBuilder: {
+      library: 'Library',
+      dragOrClick: 'Drag or click to add',
+      properties: 'Properties',
+      noParameters: 'No parameters to configure.',
+      selectBlock: 'Select a block to edit properties',
+      jsonOutput: 'JSON Output',
+      blocks: 'blocks',
+    },
+    latex: {
+      categories: {
+        templates: 'Templates',
+        greek: 'Greek',
+        operators: 'Operators',
+        relations: 'Relations',
+        arrows: 'Arrows',
+        sets: 'Sets',
+        matrices: 'Matrices',
+        accents: 'Accents',
+      },
+      tip: 'Tip: Use $$...$$ for display math, $...$ for inline',
+    },
   },
   ko: {
     header: {
@@ -150,6 +200,7 @@ export const translations: Record<Language, Translations> = {
     editor: {
       autoSaved: '자동 저장됨',
       untitled: '제목 없음',
+      empty: '비어있음',
     },
     dialog: {
       createNewDocument: '새 문서를 만드시겠습니까?',
@@ -182,6 +233,28 @@ export const translations: Record<Language, Translations> = {
           description: '드래그 앤 드롭으로 JSON 구조 구축',
         },
       },
+    },
+    jsonBuilder: {
+      library: '라이브러리',
+      dragOrClick: '드래그하거나 클릭하여 추가',
+      properties: '속성',
+      noParameters: '설정할 매개변수가 없습니다.',
+      selectBlock: '속성을 편집하려면 블록을 선택하세요',
+      jsonOutput: 'JSON 출력',
+      blocks: '블록',
+    },
+    latex: {
+      categories: {
+        templates: '템플릿',
+        greek: '그리스 문자',
+        operators: '연산자',
+        relations: '관계',
+        arrows: '화살표',
+        sets: '집합',
+        matrices: '행렬',
+        accents: '강세',
+      },
+      tip: '팁: 수식 블록은 $$...$$, 인라인 수식은 $...$ 를 사용하세요',
     },
   },
 };

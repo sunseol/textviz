@@ -5,6 +5,7 @@ import { Moon, Sun, Github, Download, Languages } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useExportImage } from '@/hooks/useExportImage';
+import { AuthButton } from '@/components/auth/AuthButton';
 
 export function Header() {
   const pathname = usePathname();
@@ -63,13 +64,13 @@ export function Header() {
           </div>
           <nav className="flex items-center space-x-2">
             {exportConfig && (
-                <button
-                    onClick={() => downloadImage(exportConfig.id, exportConfig.name)}
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 mr-2 border border-input bg-transparent shadow-sm"
-                >
-                    <Download className="h-4 w-4 mr-2" />
-                    {t.header.export}
-                </button>
+              <button
+                onClick={() => downloadImage(exportConfig.id, exportConfig.name)}
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3 mr-2 border border-input bg-transparent shadow-sm"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                {t.header.export}
+              </button>
             )}
             <Link
               href="https://github.com"
@@ -99,6 +100,7 @@ export function Header() {
               )}
               <span className="sr-only">Toggle theme</span>
             </button>
+            <AuthButton />
           </nav>
         </div>
       </div>

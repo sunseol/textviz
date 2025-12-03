@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useMarkdownStore } from '@/store/useMarkdownStore';
 import { useLatexStore } from '@/store/useLatexStore';
 import { useMermaidStore } from '@/store/useMermaidStore';
+import { useLanguageStore } from '@/store/useLanguageStore';
 import Link from 'next/link';
 import { FileText, Sigma, GitGraph, Clock } from 'lucide-react';
 
@@ -12,6 +13,7 @@ export function RecentFiles() {
   const markdown = useMarkdownStore((state) => state.markdown);
   const latex = useLatexStore((state) => state.latex);
   const mermaidCode = useMermaidStore((state) => state.mermaidCode);
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     setMounted(true);
@@ -21,21 +23,21 @@ export function RecentFiles() {
 
   const items = [
     {
-      type: 'Markdown',
+      type: t.nav.markdown,
       href: '/markdown',
       content: markdown,
       icon: FileText,
       color: 'text-blue-500',
     },
     {
-      type: 'LaTeX',
+      type: t.nav.latex,
       href: '/latex',
       content: latex,
       icon: Sigma,
       color: 'text-green-500',
     },
     {
-      type: 'Mermaid',
+      type: t.nav.mermaid,
       href: '/mermaid',
       content: mermaidCode,
       icon: GitGraph,
@@ -47,24 +49,24 @@ export function RecentFiles() {
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Clock className="h-5 w-5 text-muted-foreground" />
-        <h2 className="text-2xl font-bold tracking-tight">Recent Works</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t.home.recentFiles}</h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <Link
-            key={item.type}
+            key={item.href}
             href={item.href}
             className="group flex flex-col gap-2 rounded-lg border p-4 hover:border-primary/50 hover:shadow-md transition-all bg-card"
           >
             <div className="flex items-center gap-2">
               <item.icon className={`h-4 w-4 ${item.color}`} />
-              <span className="font-medium">{item.type} Draft</span>
+              <span className="font-medium">{item.type} {t.sidebar.draft}</span>
             </div>
             <p className="text-xs text-muted-foreground line-clamp-3 font-mono bg-muted/30 p-2 rounded h-16 overflow-hidden">
-              {item.content || '(Empty)'}
+              {item.content || `(${t.editor.empty})`}
             </p>
             <div className="text-[10px] text-muted-foreground mt-auto pt-2">
-              Auto-saved
+              {t.editor.autoSaved}
             </div>
           </Link>
         ))}

@@ -21,8 +21,8 @@ export default function MarkdownPage() {
   const updateDocument = useDocumentStore((state) => state.updateDocument);
   const addDocument = useDocumentStore((state) => state.addDocument);
   const { t } = useLanguageStore();
-  
-  const activeDocument = React.useMemo(() => 
+
+  const activeDocument = React.useMemo(() =>
     documents.find(doc => doc.id === activeDocumentId) || null,
     [documents, activeDocumentId]
   );
@@ -46,7 +46,7 @@ export default function MarkdownPage() {
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
   };
-  
+
   if (!mounted) return null;
 
   const handleToolbarInsert = (prefix: string, suffix: string) => {
@@ -107,7 +107,7 @@ export default function MarkdownPage() {
         <div className="hidden w-60 shrink-0 lg:block">
           <DocumentSidebar active="markdown" />
         </div>
-        
+
         {/* Main Editor Container */}
         <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-neutral-200/60 bg-white shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
           {/* Editor Header */}
@@ -119,7 +119,7 @@ export default function MarkdownPage() {
                 <div className="h-3 w-3 rounded-full bg-green-400" />
               </div>
               <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                {activeDocument?.title || 'Untitled.md'}
+                {activeDocument?.title || `${t.editor.untitled}.md`}
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-400">
@@ -129,12 +129,12 @@ export default function MarkdownPage() {
               <span>{t.editor.autoSaved}</span>
             </div>
           </div>
-          
+
           {/* Split Pane */}
           <div className="flex-1 overflow-hidden">
             <ResizableSplitPane
               initialLeftWidth={50}
-                left={
+              left={
                 <>
                   <MarkdownToolbar onInsert={handleToolbarInsert} />
                   <div style={{ height: 'calc(100vh - 160px)' }}>
@@ -166,6 +166,6 @@ export default function MarkdownPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

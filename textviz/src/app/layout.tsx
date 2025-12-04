@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Bona_Nova_SC } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body
         className={`${geistMono.variable} ${bonaNovaSC.variable} antialiased`}
       >
+        <ThemeProvider />
         {children}
       </body>
     </html>

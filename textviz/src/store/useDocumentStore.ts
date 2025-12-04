@@ -70,9 +70,19 @@ $$ \prod_{i=1}^{n} i = n! $$`,
   'json-builder': '{"prompt":"","blocks":[]}',
 };
 
-const getDefaultTitle = (type: DocumentType, count: number): string => {
+const getDefaultTitle = (type: DocumentType, documents: Document[]): string => {
   const extension = type === 'markdown' ? 'md' : type === 'latex' ? 'tex' : type === 'mermaid' ? 'mmd' : 'json';
-  return `Untitled-${count + 1}.${extension}`;
+  const prefix = 'Untitled-';
+
+  const existingNumbers = documents
+    .filter(doc => doc.title.startsWith(prefix) && doc.title.endsWith(`.${extension}`))
+    .map(doc => {
+      const match = doc.title.match(/Untitled-(\d+)\./);
+      return match ? parseInt(match[1], 10) : 0;
+    });
+
+  const maxNumber = Math.max(0, ...existingNumbers);
+  return `${prefix}${maxNumber + 1}.${extension}`;
 };
 
 export const useDocumentStore = create<DocumentStore>((set, get) => ({
@@ -128,16 +138,13 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      // Handle local-only mode or prompt login?
-      // For now, we'll just add to local state but it won't persist if we refresh
-      // Or we could enforce login. Let's enforce login for saving for now, or just show alert.
       alert('Please login to create documents');
       return;
     }
 
     const documents = get().documents;
     const typeDocuments = documents.filter(doc => doc.type === type);
-    const title = getDefaultTitle(type, typeDocuments.length);
+    const title = getDefaultTitle(type, typeDocuments);
     const content = defaultTemplates[type];
 
     const { data, error } = await supabase

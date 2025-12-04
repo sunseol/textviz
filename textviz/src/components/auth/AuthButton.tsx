@@ -8,12 +8,17 @@ import { LogOut, User as UserIcon } from 'lucide-react';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useDocumentStore } from '@/store/useDocumentStore';
 
+import { useRouter } from 'next/navigation';
+
+// ... (imports)
+
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
     const { t } = useLanguageStore();
     const fetchDocuments = useDocumentStore((state) => state.fetchDocuments);
+    const router = useRouter();
 
     useEffect(() => {
         const getUser = async () => {
@@ -39,13 +44,8 @@ export function AuthButton() {
         return () => subscription.unsubscribe();
     }, [fetchDocuments]);
 
-    const handleLogin = async () => {
-        await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${location.origin}/auth/callback`,
-            },
-        });
+    const handleLogin = () => {
+        router.push('/login');
     };
 
     const handleLogout = async () => {

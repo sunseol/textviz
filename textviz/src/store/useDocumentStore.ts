@@ -76,9 +76,19 @@ $$ \prod_{i=1}^{n} i = n! $$`,
 
 const LOCAL_STORAGE_KEY = 'textviz-documents';
 
-const getDefaultTitle = (type: DocumentType, count: number): string => {
+const getDefaultTitle = (type: DocumentType, documents: Document[]): string => {
   const extension = type === 'markdown' ? 'md' : type === 'latex' ? 'tex' : type === 'mermaid' ? 'mmd' : 'json';
-  return `Untitled-${count + 1}.${extension}`;
+  const prefix = 'Untitled-';
+
+  const existingNumbers = documents
+    .filter(doc => doc.title.startsWith(prefix) && doc.title.endsWith(`.${extension}`))
+    .map(doc => {
+      const match = doc.title.match(/Untitled-(\d+)\./);
+      return match ? parseInt(match[1], 10) : 0;
+    });
+
+  const maxNumber = Math.max(0, ...existingNumbers);
+  return `${prefix}${maxNumber + 1}.${extension}`;
 };
 
 // Helper for LocalStorage
@@ -149,7 +159,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
     const documents = get().documents;
     const typeDocuments = documents.filter(doc => doc.type === type);
-    const title = getDefaultTitle(type, typeDocuments.length);
+    const title = getDefaultTitle(type, typeDocuments);
     const content = defaultTemplates[type];
 
     if (user) {
@@ -204,6 +214,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       set({
         documents: newDocuments,
         activeDocumentId: newDoc.id,
+        isInitialized: true // Ensure initialized is true after adding
       });
       return newDoc;
     }
@@ -315,14 +326,8 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     }
 
     if (syncedCount > 0) {
-      // Clear local storage after successful sync
-      // We assume if one failed, we probably don't want to delete ALL, but
-      // for simplicity in this version, we clear if at least one worked (or maybe we should only remove synced ones?)
-      // Let's clear all for now to avoid complexity of partial sync management.
       if (syncedCount === localDocs.length) {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
-      } else {
-        // Partial clear likely needed, but keeping it simple: just fetch fresh from remote
       }
 
       await get().fetchDocuments(); // Refresh from server

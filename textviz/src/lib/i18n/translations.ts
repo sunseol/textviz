@@ -95,6 +95,30 @@ export interface Translations {
     };
     tip: string;
   };
+
+  // Auth
+  auth: {
+    loginTitle: string;
+    signupTitle: string;
+    loginSubtitle: string;
+    signupSubtitle: string;
+    email: string;
+    password: string;
+    fullName: string;
+    rememberMe: string;
+    signIn: string;
+    signUp: string;
+    createAccount: string;
+    continueWithGoogle: string;
+    orContinueWith: string;
+    checkInbox: string;
+    sentConfirmationTo: string;
+    backToLogin: string;
+    dontHaveAccount: string;
+    alreadyHaveAccount: string;
+    signUpLink: string;
+    signInLink: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -178,6 +202,28 @@ export const translations: Record<Language, Translations> = {
       },
       tip: 'Tip: Use $$...$$ for display math, $...$ for inline',
     },
+    auth: {
+      loginTitle: 'Welcome back',
+      signupTitle: 'Create an account',
+      loginSubtitle: 'Enter your details to access your account',
+      signupSubtitle: 'Enter your details to get started',
+      email: 'Email',
+      password: 'Password',
+      fullName: 'Full Name',
+      rememberMe: 'Remember me',
+      signIn: 'Sign In',
+      signUp: 'Sign Up',
+      createAccount: 'Create Account',
+      continueWithGoogle: 'Continue with Google',
+      orContinueWith: 'Or continue with',
+      checkInbox: 'Check your inbox',
+      sentConfirmationTo: "We've sent a confirmation link to",
+      backToLogin: 'Back to Login',
+      dontHaveAccount: "Don't have an account?",
+      alreadyHaveAccount: 'Already have an account?',
+      signUpLink: 'Sign up',
+      signInLink: 'Sign in',
+    },
   },
   ko: {
     header: {
@@ -258,6 +304,28 @@ export const translations: Record<Language, Translations> = {
         accents: '강세',
       },
       tip: '팁: 수식 블록은 $$...$$, 인라인 수식은 $...$ 를 사용하세요',
+    },
+    auth: {
+      loginTitle: '환영합니다',
+      signupTitle: '계정 만들기',
+      loginSubtitle: '계정에 액세스하려면 정보를 입력하세요',
+      signupSubtitle: '시작하려면 정보를 입력하세요',
+      email: '이메일',
+      password: '비밀번호',
+      fullName: '이름',
+      rememberMe: '로그인 유지',
+      signIn: '로그인',
+      signUp: '회원가입',
+      createAccount: '계정 생성',
+      continueWithGoogle: 'Google로 계속하기',
+      orContinueWith: '또는',
+      checkInbox: '메일함을 확인하세요',
+      sentConfirmationTo: '다음 주소로 인증 링크를 보냈습니다:',
+      backToLogin: '로그인으로 돌아가기',
+      dontHaveAccount: '계정이 없으신가요?',
+      alreadyHaveAccount: '이미 계정이 있으신가요?',
+      signUpLink: '회원가입',
+      signInLink: '로그인',
     },
   },
 };

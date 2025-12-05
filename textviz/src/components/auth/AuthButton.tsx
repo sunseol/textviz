@@ -7,6 +7,7 @@ import { User } from '@supabase/supabase-js';
 import { LogOut, User as UserIcon, RefreshCw } from 'lucide-react';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useDocumentStore } from '@/store/useDocumentStore';
+import { useRouter } from 'next/navigation';
 
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
@@ -15,6 +16,7 @@ export function AuthButton() {
     const supabase = createClient();
     const { t } = useLanguageStore();
     const { fetchDocuments, syncLocalDocuments } = useDocumentStore();
+    const router = useRouter();
 
     useEffect(() => {
         const getUser = async () => {
@@ -63,13 +65,8 @@ export function AuthButton() {
         }
     };
 
-    const handleLogin = async () => {
-        await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${location.origin}/auth/callback`,
-            },
-        });
+    const handleLogin = () => {
+        router.push('/login');
     };
 
     const handleLogout = async () => {

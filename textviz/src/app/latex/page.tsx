@@ -80,7 +80,7 @@ export default function LatexPage() {
       <Header />
       <div className="flex flex-1 gap-4 overflow-hidden p-4">
         {/* Sidebar */}
-        <div className="hidden w-60 shrink-0 lg:block">
+        <div className="hidden shrink-0 lg:block">
           <DocumentSidebar active="latex" />
         </div>
 

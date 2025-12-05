@@ -12,6 +12,7 @@ export interface Translations {
     latex: string;
     mermaid: string;
     jsonBuilder: string;
+    repository: string;
   };
 
   // Document Sidebar
@@ -106,6 +107,7 @@ export const translations: Record<Language, Translations> = {
       latex: 'LaTeX',
       mermaid: 'Mermaid',
       jsonBuilder: 'JSON Builder',
+      repository: 'Repository',
     },
     sidebar: {
       documents: 'Documents',
@@ -186,6 +188,7 @@ export const translations: Record<Language, Translations> = {
       latex: 'LaTeX',
       mermaid: '머메이드',
       jsonBuilder: 'JSON 빌더',
+      repository: '저장소',
     },
     sidebar: {
       documents: '문서',

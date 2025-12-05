@@ -4,16 +4,17 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { User } from '@supabase/supabase-js';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, RefreshCw } from 'lucide-react';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useDocumentStore } from '@/store/useDocumentStore';
 
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isSyncing, setIsSyncing] = useState(false);
     const supabase = createClient();
     const { t } = useLanguageStore();
-    const fetchDocuments = useDocumentStore((state) => state.fetchDocuments);
+    const { fetchDocuments, syncLocalDocuments } = useDocumentStore();
 
     useEffect(() => {
         const getUser = async () => {
@@ -21,23 +22,46 @@ export function AuthButton() {
             setUser(user);
             setLoading(false);
             if (user) {
+                // Check if we need to sync
+                handleSync();
                 fetchDocuments();
+            } else {
+                useDocumentStore.setState({ isInitialized: true });
             }
         };
 
         getUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             setUser(session?.user ?? null);
             if (session?.user) {
+                await handleSync();
                 fetchDocuments();
             } else {
-                useDocumentStore.setState({ documents: [], activeDocumentId: null });
+                // Clear documents on logout to avoid showing stale data, then fetch local if any (though local mode handles this)
+                useDocumentStore.setState({ documents: [], activeDocumentId: null, isInitialized: true });
+                fetchDocuments(); // Will fetch local docs
             }
         });
 
         return () => subscription.unsubscribe();
     }, [fetchDocuments]);
+
+    const handleSync = async () => {
+        setIsSyncing(true);
+        try {
+            const count = await syncLocalDocuments();
+            if (count > 0) {
+                // Use a more subtle notification in production, but alert is what was requested/easiest for now.
+                // Ideally, replace this with a nice toast.
+                alert(`Successfully synced ${count} local documents to your account.`);
+            }
+        } catch (error) {
+            console.error("Sync failed", error);
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     const handleLogin = async () => {
         await supabase.auth.signInWithOAuth({
@@ -62,6 +86,12 @@ export function AuthButton() {
                 <div className="hidden md:flex flex-col items-end text-xs mr-1">
                     <span className="font-medium">{user.user_metadata.full_name || user.email}</span>
                 </div>
+                {isSyncing && (
+                    <div className="flex items-center text-xs text-muted-foreground animate-pulse mr-2">
+                        <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                        Syncing...
+                    </div>
+                )}
                 <Button
                     variant="ghost"
                     size="sm"

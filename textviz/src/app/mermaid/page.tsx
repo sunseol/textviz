@@ -21,7 +21,9 @@ export default function MermaidPage() {
   const activeDocumentId = useDocumentStore((state) => state.activeDocumentId);
   const updateDocument = useDocumentStore((state) => state.updateDocument);
   const addDocument = useDocumentStore((state) => state.addDocument);
+  const fetchDocuments = useDocumentStore((state) => state.fetchDocuments);
   const isInitialized = useDocumentStore((state) => state.isInitialized);
+  const isLoading = useDocumentStore((state) => state.isLoading);
   const { t } = useLanguageStore();
 
   const activeDocument = React.useMemo(() =>
@@ -30,11 +32,15 @@ export default function MermaidPage() {
   );
 
   React.useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
+
+  React.useEffect(() => {
     // Create initial document if none exists
-    if (isInitialized && documents.filter(d => d.type === 'mermaid').length === 0) {
+    if (isInitialized && !isLoading && documents.filter(d => d.type === 'mermaid').length === 0) {
       addDocument('mermaid');
     }
-  }, [isInitialized, documents]);
+  }, [isInitialized, isLoading, documents, addDocument]);
 
   const mermaidCode = activeDocument?.type === 'mermaid' ? activeDocument.content : '';
 
@@ -60,7 +66,6 @@ export default function MermaidPage() {
         {/* Main Editor Container */}
         <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-neutral-200/60 bg-white shadow-xl shadow-neutral-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
           {/* Editor Header */}
-          {/* Editor Header */}
           <EditorHeader
             title={activeDocument?.title || `${t.editor.untitled}.mmd`}
             typeLabel={t.nav.mermaid}
@@ -77,7 +82,7 @@ export default function MermaidPage() {
             <ResizableSplitPane
               initialLeftWidth={50}
               left={
-                <div style={{ height: 'calc(100vh - 160px)' }}>
+                <div className="h-full">
                   <MonacoEditorWrapper
                     language="markdown"
                     value={mermaidCode}

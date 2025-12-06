@@ -23,6 +23,12 @@ export const useLanguageStore = create<LanguageStore>()(
     {
       name: 'textviz-language-storage',
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ language: state.language }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.t = translations[state.language];
+        }
+      },
     }
   )
 );

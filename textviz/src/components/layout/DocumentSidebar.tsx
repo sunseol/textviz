@@ -58,6 +58,8 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   const editInputRef = useRef<HTMLInputElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isNewDocModalOpen, setIsNewDocModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const documents = useDocumentStore((state) => state.documents);
   const addDocument = useDocumentStore((state) => state.addDocument);
@@ -98,10 +100,17 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
     setEditingId(null);
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm(t.dialog?.confirm || "Are you sure you want to delete this document?")) {
-      await deleteDocument(id);
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteId) {
+      await deleteDocument(deleteId);
+      setDeleteId(null);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -324,6 +333,17 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
         message={t.dialog.createNewDocumentMessage}
         confirmText={t.dialog.confirm}
         cancelText={t.dialog.cancel}
+      />
+
+      <ConfirmDialog
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t.dialog.deleteDocument}
+        message={t.dialog.deleteDocumentMessage}
+        confirmText={t.dialog.confirm}
+        cancelText={t.dialog.cancel}
+        variant="danger"
       />
     </>
   );

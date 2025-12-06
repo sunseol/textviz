@@ -98,9 +98,23 @@ const getLocalDocs = (): Document[] => {
   return stored ? JSON.parse(stored) : [];
 };
 
+const getLocalActiveId = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('textviz-active-doc');
+};
+
 const saveLocalDocs = (docs: Document[]) => {
   if (typeof window === 'undefined') return;
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(docs));
+};
+
+const saveLocalActiveId = (id: string | null) => {
+  if (typeof window === 'undefined') return;
+  if (id) {
+    localStorage.setItem('textviz-active-doc', id);
+  } else {
+    localStorage.removeItem('textviz-active-doc');
+  }
 };
 
 export const useDocumentStore = create<DocumentStore>((set, get) => ({
@@ -149,7 +163,10 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
     // Set active document if needed
     if (!get().activeDocumentId) {
-      // Optional: restore active ID logic
+      const savedActiveId = getLocalActiveId();
+      if (savedActiveId && get().documents.some(d => d.id === savedActiveId)) {
+        set({ activeDocumentId: savedActiveId });
+      }
     }
   },
 
@@ -208,13 +225,18 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
         isLocal: true,
       };
 
-      const newDocuments = [newDoc, ...documents];
+      // Ensure we have the latest local docs to avoid overwriting with stale state
+      const currentLocalDocs = getLocalDocs();
+      // Check if we already have this doc (unlikely but safe)
+      const exists = currentLocalDocs.some(d => d.id === newDoc.id);
+      const newDocuments = exists ? currentLocalDocs : [newDoc, ...currentLocalDocs];
+
       saveLocalDocs(newDocuments);
 
       set({
         documents: newDocuments,
         activeDocumentId: newDoc.id,
-        isInitialized: true // Ensure initialized is true after adding
+        isInitialized: true
       });
       return newDoc;
     }
@@ -338,6 +360,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
   setActiveDocument: (id: string) => {
     set({ activeDocumentId: id });
+    saveLocalActiveId(id);
   },
 
   getActiveDocument: () => {

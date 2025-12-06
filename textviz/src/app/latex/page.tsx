@@ -23,6 +23,7 @@ export default function LatexPage() {
   const activeDocumentId = useDocumentStore((state) => state.activeDocumentId);
   const updateDocument = useDocumentStore((state) => state.updateDocument);
   const addDocument = useDocumentStore((state) => state.addDocument);
+  const fetchDocuments = useDocumentStore((state) => state.fetchDocuments);
   const isInitialized = useDocumentStore((state) => state.isInitialized);
   const { t } = useLanguageStore();
 
@@ -31,13 +32,19 @@ export default function LatexPage() {
     [documents, activeDocumentId]
   );
 
+  const isLoading = useDocumentStore((state) => state.isLoading);
+
   React.useEffect(() => {
     setMounted(true);
+    fetchDocuments();
+  }, [fetchDocuments]);
+
+  React.useEffect(() => {
     // Create initial document if none exists
-    if (isInitialized && documents.filter(d => d.type === 'latex').length === 0) {
+    if (isInitialized && !isLoading && documents.filter(d => d.type === 'latex').length === 0) {
       addDocument('latex');
     }
-  }, [isInitialized, documents]);
+  }, [isInitialized, isLoading, documents, addDocument]);
 
   const latex = activeDocument?.type === 'latex' ? activeDocument.content : '';
 

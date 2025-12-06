@@ -11,6 +11,7 @@ interface ConfirmDialogProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
+  variant?: 'default' | 'danger';
 }
 
 export function ConfirmDialog({
@@ -21,6 +22,7 @@ export function ConfirmDialog({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
+  variant = 'default',
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
@@ -28,6 +30,8 @@ export function ConfirmDialog({
     onConfirm();
     onClose();
   };
+
+  const isDanger = variant === 'danger';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -53,7 +57,10 @@ export function ConfirmDialog({
           <div className="px-6 py-6">
             <div className="flex gap-4">
               {/* Icon */}
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 shadow-lg">
+              <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg ${isDanger
+                  ? 'bg-gradient-to-br from-red-400 to-red-500'
+                  : 'bg-gradient-to-br from-amber-400 to-amber-500'
+                }`}>
                 <AlertCircle className="h-8 w-8 text-white" strokeWidth={2.5} />
               </div>
 
@@ -78,7 +85,10 @@ export function ConfirmDialog({
               </button>
               <button
                 onClick={handleConfirm}
-                className="rounded-lg bg-blue-500 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-600 active:scale-95"
+                className={`rounded-lg px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all active:scale-95 ${isDanger
+                    ? 'bg-red-500 hover:bg-red-600'
+                    : 'bg-blue-500 hover:bg-blue-600'
+                  }`}
               >
                 {confirmText}
               </button>

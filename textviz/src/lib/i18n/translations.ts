@@ -41,6 +41,8 @@ export interface Translations {
     createNew: string;
     cancel: string;
     confirm: string;
+    deleteDocument: string;
+    deleteDocumentMessage: string;
   };
 
   // Home Page
@@ -154,6 +156,8 @@ export const translations: Record<Language, Translations> = {
       createNew: 'Create New',
       cancel: 'Cancel',
       confirm: 'Confirm',
+      deleteDocument: 'Delete Document?',
+      deleteDocumentMessage: 'Are you sure you want to delete this document? This action cannot be undone.',
     },
     home: {
       title: 'Welcome to TextViz',
@@ -257,6 +261,8 @@ export const translations: Record<Language, Translations> = {
       createNew: '새로 만들기',
       cancel: '취소',
       confirm: '확인',
+      deleteDocument: '문서를 삭제하시겠습니까?',
+      deleteDocumentMessage: '정말로 이 문서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
     },
     home: {
       title: 'TextViz에 오신 것을 환영합니다',

@@ -78,14 +78,27 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   }, [editingId]);
 
   const handleNewDocument = () => {
+    console.log('[DocumentSidebar] Plus button clicked');
     // If not authenticated, we might want to skip modal? But consistency is good.
     // For now, always show modal as "Create New Document?" prompts nicely.
     setIsNewDocModalOpen(true);
   };
 
   const handleConfirmNewDocument = async () => {
-    await addDocument(active as DocumentType);
-    setIsNewDocModalOpen(false);
+    console.log('[DocumentSidebar] Confirming new document creation. Active type:', active);
+    try {
+      if (!active) {
+        console.error('[DocumentSidebar] Active document type is undefined!');
+        return;
+      }
+      const newDoc = await addDocument(active as DocumentType);
+      console.log('[DocumentSidebar] Document created successfully:', newDoc);
+      setIsNewDocModalOpen(false);
+    } catch (error) {
+      console.error('[DocumentSidebar] Error creating document:', error);
+      // Optional: show user feedback here (toast, alert)
+      alert(t.dialog.errorCreating || 'Error creating document');
+    }
   };
 
   const startEditing = (id: string, currentTitle: string) => {

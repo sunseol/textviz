@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createClient } from '@/lib/supabase/client';
+import { v4 as uuidv4 } from 'uuid';
 
 export type DocumentType = 'markdown' | 'latex' | 'mermaid' | 'json-builder';
 
@@ -171,8 +172,10 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   },
 
   addDocument: async (type: DocumentType) => {
+    console.log('[useDocumentStore] addDocument called with type:', type);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    console.log('[useDocumentStore] User authenticated:', !!user);
 
     const documents = get().documents;
     const typeDocuments = documents.filter(doc => doc.type === type);
@@ -180,6 +183,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     const content = defaultTemplates[type];
 
     if (user) {
+      console.log('[useDocumentStore] Attempting Remote Creation');
       // Add to Supabase
       const { data, error } = await supabase
         .from('documents')
@@ -193,9 +197,10 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
         .single();
 
       if (error) {
-        console.error('Error creating document:', error);
+        console.error('[useDocumentStore] Error creating remote document:', error);
         return;
       }
+      console.log('[useDocumentStore] Remote document created:', data);
 
       const newDoc: Document = {
         id: data.id,
@@ -214,9 +219,10 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       });
       return newDoc;
     } else {
+      console.log('[useDocumentStore] Attempting Local Creation');
       // Add to Local
       const newDoc: Document = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         type,
         title,
         content,
@@ -225,20 +231,26 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
         isLocal: true,
       };
 
-      // Ensure we have the latest local docs to avoid overwriting with stale state
-      const currentLocalDocs = getLocalDocs();
-      // Check if we already have this doc (unlikely but safe)
-      const exists = currentLocalDocs.some(d => d.id === newDoc.id);
-      const newDocuments = exists ? currentLocalDocs : [newDoc, ...currentLocalDocs];
+      try {
+        // Ensure we have the latest local docs to avoid overwriting with stale state
+        const currentLocalDocs = getLocalDocs();
+        // Check if we already have this doc (unlikely but safe)
+        const exists = currentLocalDocs.some(d => d.id === newDoc.id);
+        const newDocuments = exists ? currentLocalDocs : [newDoc, ...currentLocalDocs];
 
-      saveLocalDocs(newDocuments);
+        saveLocalDocs(newDocuments);
+        console.log('[useDocumentStore] Local document saved:', newDoc);
 
-      set({
-        documents: newDocuments,
-        activeDocumentId: newDoc.id,
-        isInitialized: true
-      });
-      return newDoc;
+        set({
+          documents: newDocuments,
+          activeDocumentId: newDoc.id,
+          isInitialized: true
+        });
+        return newDoc;
+      } catch (error) {
+        console.error('[useDocumentStore] Error creating local document:', error);
+        throw error; // Re-throw so UI can handle if needed
+      }
     }
   },
 

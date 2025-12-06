@@ -15,8 +15,15 @@ const bonaNovaSC = Bona_Nova_SC({
 });
 
 export const metadata: Metadata = {
-  title: "TextViz - Visual Text Editor Suite",
-  description: "A powerful visual editor for Markdown, LaTeX, Mermaid diagrams, and JSON building",
+  title: "TextViz - Don't Scatter It, Gather It Here",
+  description: "Knowledge is more valuable when gathered. A powerful visual editor for Markdown, LaTeX, Mermaid diagrams, and JSON building.",
+  openGraph: {
+    title: "TextViz - Gather Your Knowledge",
+    description: "Don't scatter your ideas. Write, visualize, and organize them in one place.",
+    type: "website",
+    locale: "ko_KR", // Primary target seems to be Korean user base based on request
+    siteName: "TextViz",
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -27,6 +34,7 @@ export const metadata: Metadata = {
       { url: '/favicon-32x32.png' },
     ],
   },
+  keywords: ["Markdown Editor", "LaTeX Editor", "Mermaid Diagrams", "JSON Builder", "Visual Editor", "Note Taking", "Knowledge Base"],
 };
 
 export default function RootLayout({

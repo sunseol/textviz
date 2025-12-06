@@ -160,27 +160,27 @@ export const translations: Record<Language, Translations> = {
       deleteDocumentMessage: 'Are you sure you want to delete this document? This action cannot be undone.',
     },
     home: {
-      title: 'Welcome to TextViz',
-      subtitle: 'A powerful visual editor suite for text-based formats',
-      getStarted: 'Get Started',
+      title: "Don't Scatter It,\nGather It Here.",
+      subtitle: 'Because knowledge is more valuable when gathered.',
+      getStarted: 'Get Started Now',
       recentFiles: 'Recent Files',
       noRecentFiles: 'No recent files',
       features: {
         markdown: {
           title: 'Markdown Editor',
-          description: 'Write and preview Markdown with live rendering',
+          description: 'Seamless writing experience that keeps your flow.',
         },
         latex: {
-          title: 'LaTeX Editor',
-          description: 'Create beautiful mathematical documents',
+          title: 'LaTeX Math',
+          description: 'Express complex formulas beautifully and accurately.',
         },
         mermaid: {
           title: 'Mermaid Diagrams',
-          description: 'Design flowcharts and diagrams visually',
+          description: 'Visualize complex structures clearly.',
         },
         jsonBuilder: {
           title: 'JSON Builder',
-          description: 'Build JSON structures with drag and drop',
+          description: 'Design and manage data structures intuitively.',
         },
       },
     },
@@ -265,27 +265,27 @@ export const translations: Record<Language, Translations> = {
       deleteDocumentMessage: '정말로 이 문서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
     },
     home: {
-      title: 'TextViz에 오신 것을 환영합니다',
-      subtitle: '텍스트 기반 형식을 위한 강력한 비주얼 에디터',
-      getStarted: '시작하기',
+      title: '나눠쓰지 말고,\n여기서 모아서 보자.',
+      subtitle: '지식은 모을 수록 가치 있으니까.',
+      getStarted: '지금 시작하기',
       recentFiles: '최근 파일',
       noRecentFiles: '최근 파일 없음',
       features: {
         markdown: {
           title: '마크다운 편집기',
-          description: '실시간 렌더링으로 마크다운 작성 및 미리보기',
+          description: '생각의 흐름을 끊지 않는 매끄러운 글쓰기 경험.',
         },
         latex: {
-          title: 'LaTeX 편집기',
-          description: '아름다운 수학 문서 작성',
+          title: 'LaTeX 수식',
+          description: '복잡한 수식도 아름답고 정확하게 표현합니다.',
         },
         mermaid: {
           title: '머메이드 다이어그램',
-          description: '시각적으로 순서도와 다이어그램 디자인',
+          description: '복잡한 구조를 시각적으로 명쾌하게 정리하세요.',
         },
         jsonBuilder: {
           title: 'JSON 빌더',
-          description: '드래그 앤 드롭으로 JSON 구조 구축',
+          description: '데이터 구조를 직관적으로 설계하고 관리합니다.',
         },
       },
     },

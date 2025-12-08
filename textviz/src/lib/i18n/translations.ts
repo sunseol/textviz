@@ -43,6 +43,7 @@ export interface Translations {
     confirm: string;
     deleteDocument: string;
     deleteDocumentMessage: string;
+    errorCreating: string;
   };
 
   // Home Page
@@ -158,6 +159,7 @@ export const translations: Record<Language, Translations> = {
       confirm: 'Confirm',
       deleteDocument: 'Delete Document?',
       deleteDocumentMessage: 'Are you sure you want to delete this document? This action cannot be undone.',
+      errorCreating: 'Error creating document',
     },
     home: {
       title: "Don't Scatter It,\nGather It Here.",
@@ -263,6 +265,7 @@ export const translations: Record<Language, Translations> = {
       confirm: '확인',
       deleteDocument: '문서를 삭제하시겠습니까?',
       deleteDocumentMessage: '정말로 이 문서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+      errorCreating: '문서 생성 중 오류가 발생했습니다',
     },
     home: {
       title: '나눠쓰지 말고,\n여기서 모아서 보자.',

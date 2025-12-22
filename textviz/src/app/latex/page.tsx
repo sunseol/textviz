@@ -40,11 +40,19 @@ export default function LatexPage() {
   }, [fetchDocuments]);
 
   React.useEffect(() => {
-    // Create initial document if none exists
-    if (isInitialized && !isLoading && documents.filter(d => d.type === 'latex').length === 0) {
-      addDocument('latex');
+    // Context Sync: Ensure active document is Latex when on this page
+    if (isInitialized && !isLoading) {
+      const currentActive = documents.find(d => d.id === activeDocumentId);
+      if (!currentActive || currentActive.type !== 'latex') {
+        const mostRecent = documents.find(d => d.type === 'latex');
+        if (mostRecent) {
+          useDocumentStore.getState().setActiveDocument(mostRecent.id);
+        } else {
+          addDocument('latex');
+        }
+      }
     }
-  }, [isInitialized, isLoading, documents, addDocument]);
+  }, [isInitialized, isLoading, documents, activeDocumentId, addDocument]);
 
   const latex = activeDocument?.type === 'latex' ? activeDocument.content : '';
 

@@ -1,0 +1,95 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "Zustand",
+        "Supabase",
+        "Milkdown",
+        "Mermaid",
+        "KaTeX",
+        "Lucide React"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "User authentication and login functionality.",
+            "files": [
+                "src/app/auth",
+                "src/app/login",
+                "src/components/auth"
+            ]
+        },
+        {
+            "name": "Markdown Editor",
+            "description": "Markdown editing functionality using Milkdown.",
+            "files": [
+                "src/app/markdown",
+                "src/components/markdown",
+                "src/store/useMarkdownStore.ts"
+            ]
+        },
+        {
+            "name": "LaTeX Editor",
+            "description": "LaTeX editing and rendering functionality.",
+            "files": [
+                "src/app/latex",
+                "src/components/latex",
+                "src/store/useLatexStore.ts"
+            ]
+        },
+        {
+            "name": "Mermaid Editor",
+            "description": "Mermaid diagram editing and rendering.",
+            "files": [
+                "src/app/mermaid",
+                "src/components/mermaid",
+                "src/store/useMermaidStore.ts"
+            ]
+        },
+        {
+            "name": "JSON Builder",
+            "description": "Visual JSON building tool.",
+            "files": [
+                "src/app/json-builder",
+                "src/components/json-builder",
+                "src/store/useJsonBuilderStore.ts"
+            ]
+        },
+        {
+            "name": "Document Repository",
+            "description": "Management of user documents and files.",
+            "files": [
+                "src/app/repository",
+                "src/store/useDocumentStore.ts"
+            ]
+        },
+        {
+            "name": "AI Assistant (Textie)",
+            "description": "AI-powered chat and assistance features.",
+            "files": [
+                "src/components/ai",
+                "src/store/useTextieStore.ts",
+                "src/store/useChatHistoryStore.ts"
+            ]
+        },
+        {
+            "name": "Settings",
+            "description": "Application settings and language preferences.",
+            "files": [
+                "src/app/settings",
+                "src/store/useLanguageStore.ts"
+            ]
+        },
+        {
+            "name": "App Layout & UI",
+            "description": "Main application layout and shared UI components.",
+            "files": [
+                "src/app/layout.tsx",
+                "src/components/layout",
+                "src/components/ui",
+                "src/store/useAppStore.ts"
+            ]
+        }
+    ]
+}

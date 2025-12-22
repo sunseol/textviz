@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Bona_Nova_SC } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { TextieChat } from "@/components/ai/TextieChat";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -26,12 +27,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.ico', sizes: '48x48' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
+    shortcut: '/favicon.ico',
     apple: [
-      { url: '/favicon-32x32.png' },
+      { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
   },
   keywords: ["Markdown Editor", "LaTeX Editor", "Mermaid Diagrams", "JSON Builder", "Visual Editor", "Note Taking", "Knowledge Base"],
@@ -46,8 +50,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistMono.variable} ${bonaNovaSC.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <ThemeProvider />
+        <TextieChat />
         {children}
       </body>
     </html>

@@ -1,5 +1,5 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
@@ -12,11 +12,19 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html.dark {
+  background-color: #0a0a0a;
+  color: #ededed;
 }
 
 body {
@@ -46,14 +54,12 @@ body {
   background: #a3a3a3;
 }
 
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: #404040;
-  }
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #525252;
-  }
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #525252;
 }
 
 /* Monaco Editor customization */

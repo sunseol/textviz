@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { cn } from '@/lib/utils';
 import { Check, Pencil, Menu } from 'lucide-react';
+import { generateTitle } from '@/app/actions/generateTitle';
+import { useDocumentStore } from '@/store/useDocumentStore';
 
 interface EditorHeaderProps {
     title: string;
@@ -14,9 +16,11 @@ export function EditorHeader({ title, typeLabel, onTitleChange, onMobileMenuClic
     const { t } = useLanguageStore();
     const [isEditing, setIsEditing] = useState(false);
 
+    // Auto-Title Logic: Access content to generate summary
+    const store = useDocumentStore();
+    const activeDoc = store.getActiveDocument();
+
     // Parse title and extension
-    // Matches everything until the last dot as the name, and the dot plus everything after as extension
-    // If no dot, extension is empty string.
     const match = title.match(/^(.*)(\.[^.]+)$/);
     const name = match ? match[1] : title;
     const extension = match ? match[2] : "";
@@ -53,6 +57,32 @@ export function EditorHeader({ title, typeLabel, onTitleChange, onMobileMenuClic
         }
     };
 
+    const handleStartEditing = async () => {
+        setIsEditing(true);
+
+        // Smart Auto-Title Trigger
+        // Trigger if title starts with 'Untitled' or '무제', and we have significant content
+        const isUntitled = name.toLowerCase().startsWith('untitled') || name === '무제';
+        const hasContent = activeDoc?.content && activeDoc.content.length > 20;
+
+        if (isUntitled && hasContent) {
+            console.log('[EditorHeader] Triggering Auto-Title...');
+            setEditName("Generating..."); // Optimistic UI
+
+            // Generate title in background
+            const generatedTitle = await generateTitle(activeDoc.content);
+            if (generatedTitle) {
+                // Check if user is still editing and hasn't manually typed something else yet (simple check)
+                // Or just force update if it was stuck on "Generating..."
+                setEditName((prev) => prev === "Generating..." ? generatedTitle : prev);
+                // If user cancels, it reverts to original name anyway in handleSave/Escape logic unless we saved it.
+                // We don't auto-save, just fill input.
+            } else {
+                setEditName(name); // Revert if failed
+            }
+        }
+    };
+
     return (
         <div className="flex shrink-0 items-center justify-between border-b border-neutral-200 bg-neutral-50/80 px-4 py-2.5 dark:border-neutral-800 dark:bg-neutral-900/80">
             <div className="flex items-center gap-3">
@@ -81,13 +111,12 @@ export function EditorHeader({ title, typeLabel, onTitleChange, onMobileMenuClic
                             onKeyDown={handleKeyDown}
                             className="h-6 w-48 rounded-sm border border-neutral-200 bg-white px-2 text-sm font-medium focus:border-primary focus:outline-none dark:border-neutral-800 dark:bg-neutral-950"
                         />
-                        {/* Optional: Show extension as non-editable text if desired, but user implementation requested "not needed", so hidden. */}
                     </div>
                 ) : (
                     <div
-                        onClick={() => setIsEditing(true)}
+                        onClick={handleStartEditing}
                         className="group flex items-center gap-2 cursor-pointer rounded hover:bg-neutral-200/50 px-2 py-0.5 -ml-2 transition-colors dark:hover:bg-neutral-800"
-                        title="Click to rename"
+                        title="Click to rename (Auto-generates for Untitled docs)"
                     >
                         <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                             {name}

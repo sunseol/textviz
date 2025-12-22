@@ -12,7 +12,14 @@ export interface Document {
   createdAt: number;
   updatedAt: number;
   user_id?: string;
-  isLocal?: boolean; // Marker to explicitly show it's local
+  isLocal?: boolean;
+  metadata?: {
+    language?: string; // 'ko', 'en'
+    intent?: string; // 'report', 'blog', 'email', 'creative'
+    deadline?: string;
+    tone?: string;
+    description?: string; // Summary or description of the doc
+  };
 }
 
 interface DocumentStore {
@@ -25,7 +32,7 @@ interface DocumentStore {
   setIsInitialized: (isInitialized: boolean) => void;
   addDocument: (type: DocumentType) => Promise<Document | void>;
   deleteDocument: (id: string) => Promise<void>;
-  updateDocument: (id: string, updates: { content?: string; title?: string }) => Promise<void>;
+  updateDocument: (id: string, updates: { content?: string; title?: string; metadata?: any }) => Promise<void>;
   setActiveDocument: (id: string) => void;
   getActiveDocument: () => Document | null;
   getDocumentsByType: (type: DocumentType) => Document[];
@@ -192,6 +199,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
           type,
           title,
           content,
+          metadata: {},
         })
         .select()
         .single();
@@ -290,7 +298,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     });
   },
 
-  updateDocument: async (id: string, updates: { content?: string; title?: string }) => {
+  updateDocument: async (id: string, updates: { content?: string; title?: string; metadata?: any }) => {
     // 1. Optimistic Update
     const currentDocuments = get().documents;
     const docIndex = currentDocuments.findIndex(d => d.id === id);
@@ -316,6 +324,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       const dbUpdates: any = { updated_at: new Date().toISOString() };
       if (updates.content !== undefined) dbUpdates.content = updates.content;
       if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.metadata !== undefined) dbUpdates.metadata = updates.metadata;
 
       const { error } = await supabase
         .from('documents')

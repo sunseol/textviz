@@ -8,6 +8,7 @@ import { useLanguageStore } from '@/store/useLanguageStore';
 import { DocumentSidebar } from '@/components/layout/DocumentSidebar';
 import { EditorHeader } from '@/components/layout/EditorHeader';
 import { MobileSidebar } from '@/components/layout/MobileSidebar';
+import { MathErrorBoundary } from '@/components/common/MathErrorBoundary';
 
 const MilkdownEditor = dynamic(
   () => import('@/components/markdown/MilkdownEditor').then((mod) => mod.MilkdownEditor),
@@ -39,11 +40,19 @@ export default function MarkdownPage() {
   }, [fetchDocuments]);
 
   React.useEffect(() => {
-    // Create initial document if none exists
-    if (isInitialized && !isLoading && documents.filter(d => d.type === 'markdown').length === 0) {
-      addDocument('markdown');
+    // Context Sync: Ensure active document is Markdown when on this page
+    if (isInitialized && !isLoading) {
+      const currentActive = documents.find(d => d.id === activeDocumentId);
+      if (!currentActive || currentActive.type !== 'markdown') {
+        const mostRecent = documents.find(d => d.type === 'markdown');
+        if (mostRecent) {
+          useDocumentStore.getState().setActiveDocument(mostRecent.id);
+        } else {
+          addDocument('markdown');
+        }
+      }
     }
-  }, [isInitialized, isLoading, documents, addDocument]);
+  }, [isInitialized, isLoading, documents, activeDocumentId, addDocument]);
 
   const markdown = activeDocument?.type === 'markdown' ? activeDocument.content : '';
 
@@ -56,7 +65,7 @@ export default function MarkdownPage() {
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
       <Header />
       <div className="flex flex-1 gap-4 overflow-hidden p-4">
         {/* Sidebar */}
@@ -81,11 +90,13 @@ export default function MarkdownPage() {
           {/* Milkdown Editor */}
           <div className="flex-1 overflow-hidden">
             {activeDocument ? (
-              <MilkdownEditor
-                key={activeDocument.id} // Re-mount on doc change to reset editor state
-                content={markdown}
-                onChange={handleEditorChange}
-              />
+              <MathErrorBoundary>
+                <MilkdownEditor
+                  key={activeDocument.id} // Re-mount on doc change to reset editor state
+                  content={markdown}
+                  onChange={handleEditorChange}
+                />
+              </MathErrorBoundary>
             ) : (
               <div className="flex h-full items-center justify-center text-neutral-400">
                 Select or create a document

@@ -1,0 +1,6 @@
+[
+    {
+        "name": "Product Requirements Document",
+        "content": "This project is a text visualization tool called TextViz.\n It supports multiple editor types: Markdown, LaTeX, Mermaid, and JSON Builder.\n It features user authentication via Supabase.\n It includes an AI assistant named 'Textie'.\n Users can save and manage documents in a repository.\n The UI is built with Next.js, Tailwind CSS, and shadcn/ui components.\n State management is handled by Zustand."
+    }
+]

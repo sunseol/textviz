@@ -30,11 +30,22 @@ export function MermaidRenderer({ content }: MermaidRendererProps) {
         // Clear previous content
         ref.current.innerHTML = '';
 
-        // Validate syntax first using parse (if available) or just try render
-        // Note: mermaid.parse is async in newer versions
-        await mermaid.parse(content);
+        // Clean up content: Remove ```mermaid wrapper if present and backticks
+        let cleanContent = content
+          .replace(/```mermaid/g, '')
+          .replace(/```/g, '')
+          .trim();
 
-        const { svg } = await mermaid.render(`mermaid-${Date.now()}`, content);
+        if (!cleanContent) {
+          ref.current.innerHTML = '';
+          setError(null);
+          return;
+        }
+
+        // Validate syntax first
+        await mermaid.parse(cleanContent);
+
+        const { svg } = await mermaid.render(`mermaid-${Date.now()}`, cleanContent);
         ref.current.innerHTML = svg;
 
         const svgEl = ref.current.querySelector('svg');
@@ -66,12 +77,15 @@ export function MermaidRenderer({ content }: MermaidRendererProps) {
         }
         setError(null);
       } catch (err) {
-        console.error("Mermaid Render Error:", err);
-        if (err instanceof Error) {
-          setError(err.message);
+        // Suppress console error for expected syntax errors during typing
+        const errorMessage = err instanceof Error ? err.message : "Syntax Error";
+        if (errorMessage.includes('Parse error') || errorMessage.includes('UnknownDiagramError')) {
+          console.warn("Mermaid Syntax Error (handled):", errorMessage);
         } else {
-          setError("Syntax Error");
+          console.error("Mermaid Render Error:", err);
         }
+
+        setError(errorMessage);
       }
     };
 

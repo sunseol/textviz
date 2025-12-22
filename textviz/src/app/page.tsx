@@ -17,14 +17,14 @@ export default function Home() {
   const { t } = useLanguageStore();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950 font-sans antialiased selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100">
+    <div className="min-h-screen bg-background font-sans antialiased selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100">
       <Header />
 
       <main className="flex flex-col">
         {/* Hero Section */}
         <section className="relative px-4 pt-20 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
           <div className="container mx-auto max-w-5xl text-center relative z-10">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white whitespace-pre-line leading-[1.15] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 whitespace-pre-line leading-[1.15] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               {t.home.title}
             </h1>
             <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 mb-10 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
@@ -57,6 +57,7 @@ export default function Home() {
                   alt="Markdown Editor"
                   width={800}
                   height={500}
+                  priority
                   className="w-full h-auto object-cover"
                 />
               </div>
@@ -65,7 +66,7 @@ export default function Home() {
                   {/* Icon match */}
                   <span className="text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wider">Markdown</span>
                 </div>
-                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.home.features.markdown.title}</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{t.home.features.markdown.title}</h2>
                 <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   {t.home.features.markdown.description}
                 </p>
@@ -75,14 +76,14 @@ export default function Home() {
         </section>
 
         {/* Feature: LaTeX (Reversed) */}
-        <section className="py-20 md:py-32 bg-white dark:bg-neutral-950">
+        <section className="py-20 md:py-32 bg-background">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-4 md:pr-10">
                 <div className="inline-flex items-center justify-center p-2 bg-green-100 dark:bg-green-900/30 rounded-lg mb-2">
                   <span className="text-green-600 dark:text-green-400 font-bold text-xs uppercase tracking-wider">LaTeX</span>
                 </div>
-                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.home.features.latex.title}</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{t.home.features.latex.title}</h2>
                 <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   {t.home.features.latex.description}
                 </p>
@@ -117,7 +118,7 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg mb-2">
                   <span className="text-purple-600 dark:text-purple-400 font-bold text-xs uppercase tracking-wider">Mermaid</span>
                 </div>
-                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.home.features.mermaid.title}</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{t.home.features.mermaid.title}</h2>
                 <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   {t.home.features.mermaid.description}
                 </p>
@@ -127,14 +128,14 @@ export default function Home() {
         </section>
 
         {/* Feature: JSON (Reversed) */}
-        <section className="py-20 md:py-32 bg-white dark:bg-neutral-950">
+        <section className="py-20 md:py-32 bg-background">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-4 md:pr-10">
                 <div className="inline-flex items-center justify-center p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg mb-2">
                   <span className="text-orange-600 dark:text-orange-400 font-bold text-xs uppercase tracking-wider">JSON</span>
                 </div>
-                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">{t.home.features.jsonBuilder.title}</h2>
+                <h2 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{t.home.features.jsonBuilder.title}</h2>
                 <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   {t.home.features.jsonBuilder.description}
                 </p>
@@ -155,7 +156,7 @@ export default function Home() {
         {/* Bottom CTA / Recent Files */}
         <section className="py-24 border-t border-neutral-100 dark:border-neutral-800">
           <div className="container mx-auto px-4 max-w-4xl text-center">
-            <h2 className="text-3xl font-bold mb-8 text-neutral-900 dark:text-white">Run your ideas.</h2>
+            <h2 className="text-3xl font-bold mb-8 text-neutral-900 dark:text-neutral-100">Run your ideas.</h2>
             <Link href="/markdown">
               <button className="rounded-full bg-neutral-900 dark:bg-white px-8 py-4 text-sm font-semibold text-white dark:text-neutral-900 shadow-lg transition-all hover:scale-105 active:scale-95">
                 {t.home.getStarted}

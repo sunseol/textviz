@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useLanguageStore } from '@/store/useLanguageStore';
+import { useDocumentStore } from '@/store/useDocumentStore';
 import { Header } from '@/components/layout/Header';
 import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { BlockLibrary } from '@/components/json-builder/BlockLibrary';
@@ -11,8 +12,29 @@ import { PropertyEditor } from '@/components/json-builder/PropertyEditor';
 export default function JsonBuilderPage() {
   const { t } = useLanguageStore();
 
+  const documents = useDocumentStore((state) => state.documents);
+  const activeDocumentId = useDocumentStore((state) => state.activeDocumentId);
+  const addDocument = useDocumentStore((state) => state.addDocument);
+  const isInitialized = useDocumentStore((state) => state.isInitialized);
+  const isLoading = useDocumentStore((state) => state.isLoading);
+
+  React.useEffect(() => {
+    // Context Sync: Ensure active document is json-builder
+    if (isInitialized && !isLoading) {
+      const currentActive = documents.find(d => d.id === activeDocumentId);
+      if (!currentActive || currentActive.type !== 'json-builder') {
+        const mostRecent = documents.find(d => d.type === 'json-builder');
+        if (mostRecent) {
+          useDocumentStore.getState().setActiveDocument(mostRecent.id);
+        } else {
+          addDocument('json-builder');
+        }
+      }
+    }
+  }, [isInitialized, isLoading, documents, activeDocumentId, addDocument]);
+
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950">
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
       <Header />
       <div className="flex flex-1 gap-4 overflow-hidden p-4">
         {/* Main Editor Container */}

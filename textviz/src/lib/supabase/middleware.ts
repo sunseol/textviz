@@ -37,16 +37,15 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    if (
-        !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        !request.nextUrl.pathname.startsWith('/auth') &&
-        request.nextUrl.pathname !== '/' &&
-        !request.nextUrl.pathname.startsWith('/_next') &&
-        !request.nextUrl.pathname.startsWith('/favicon')
-    ) {
-        // no user, potentially redirect to login page
-        // for now we allow access to public pages
+    // Protected routes that require authentication
+    const protectedRoutes = ['/json-builder', '/latex', '/mermaid', '/repository', '/settings'];
+    const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route));
+
+    if (!user && isProtectedRoute) {
+        // Redirect unauthenticated users to login page
+        const url = request.nextUrl.clone();
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
     }
 
     return supabaseResponse

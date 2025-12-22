@@ -36,16 +36,26 @@ export default function MermaidPage() {
   }, [fetchDocuments]);
 
   React.useEffect(() => {
-    // Create initial document if none exists
-    if (isInitialized && !isLoading && documents.filter(d => d.type === 'mermaid').length === 0) {
-      addDocument('mermaid');
+    // Context Sync: Ensure active document is Mermaid when on this page
+    if (isInitialized && !isLoading) {
+      const currentActive = documents.find(d => d.id === activeDocumentId);
+      if (!currentActive || currentActive.type !== 'mermaid') {
+        const mostRecent = documents.find(d => d.type === 'mermaid');
+        if (mostRecent) {
+          useDocumentStore.getState().setActiveDocument(mostRecent.id);
+        } else {
+          addDocument('mermaid');
+        }
+      }
     }
-  }, [isInitialized, isLoading, documents, addDocument]);
+  }, [isInitialized, isLoading, documents, activeDocumentId, addDocument]);
 
   const mermaidCode = activeDocument?.type === 'mermaid' ? activeDocument.content : '';
+  const lastEmittedValue = useRef<string>(mermaidCode);
 
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined && activeDocument) {
+      lastEmittedValue.current = value;
       updateDocument(activeDocument.id, { content: value });
     }
   };
@@ -53,6 +63,21 @@ export default function MermaidPage() {
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
   };
+
+  // Sync external updates (e.g. from AI Insert)
+  React.useEffect(() => {
+    if (editorRef.current && mermaidCode !== lastEmittedValue.current) {
+      // External update detected
+      const editor = editorRef.current;
+      const currentEditorValue = editor.getValue();
+
+      // Only update if truly different to avoid cursor jumps on race conditions
+      if (mermaidCode !== currentEditorValue) {
+        editor.setValue(mermaidCode);
+        lastEmittedValue.current = mermaidCode;
+      }
+    }
+  }, [mermaidCode]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-neutral-100 dark:bg-neutral-950">

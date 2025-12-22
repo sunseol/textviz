@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "loginUser": "jakeseol99@keduall.com",
+  "loginPassword": "password123",
+  "executionArgs": {
+    "projectName": "textviz",
+    "projectPath": "c:\\Users\\gaara\\textviz\\textviz",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-R6RNqDKGkwOuZotFXOz0__FvavNdCLeaXceHUpkZ3ur9pSaWNsavnlTreiKX4Ib-abSOchtviwMoxD6IBNamEO3INQpbmEVsn31vn6USesN0Ins0uLQiECCdYTp3z9OBB1Q"
+    }
+  },
+  "proxy": "http://c3f870b4-4801-406c-93a5-713db1fbdee6:EW51rIHYfWApsOcGl3Z6mtLGM6v2eAme@tun.testsprite.com:8080"
+}

@@ -1,0 +1,528 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Login Success",
+    "description": "Verify user can log in successfully with valid credentials via Supabase authentication.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid username/email and password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user is redirected to the home dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify session is persisted and user remains logged in after page reload."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Login Failure with Invalid Credentials",
+    "description": "Validate the system rejects invalid login credentials and shows relevant error messages.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid username/email or password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the login attempt fails."
+      },
+      {
+        "type": "assertion",
+        "description": "Check an error message is displayed indicating invalid credentials."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Markdown Editor Basic Editing and Saving",
+    "description": "Ensure that users can create, edit, and save Markdown documents with proper UI feedback.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and navigate to the Markdown Editor."
+      },
+      {
+        "type": "action",
+        "description": "Create a new Markdown document."
+      },
+      {
+        "type": "action",
+        "description": "Type Markdown content including headers, lists, and links."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the GFM style formatting renders correctly in the preview pane."
+      },
+      {
+        "type": "action",
+        "description": "Use the quick formatting toolbar to format text (bold, italic, code)."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the document structure navigation panel correctly reflects document headings."
+      },
+      {
+        "type": "action",
+        "description": "Save the document."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the document is saved in local storage under Markdown storage key."
+      },
+      {
+        "type": "action",
+        "description": "Reload the page and load the saved Markdown document."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure the document content loads correctly and all formatting persists."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "LaTeX Editor Render, Symbol Palette and Export",
+    "description": "Validate LaTeX document editing, symbol palette usage, bibliography management, and PDF export functionality.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open LaTeX Studio."
+      },
+      {
+        "type": "action",
+        "description": "Create a new LaTeX document."
+      },
+      {
+        "type": "action",
+        "description": "Insert LaTeX commands manually and via the symbol palette."
+      },
+      {
+        "type": "assertion",
+        "description": "Check rendering updates dynamically in the split view."
+      },
+      {
+        "type": "action",
+        "description": "Add bibliography entries using the bibliography management tool."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm bibliography is correctly displayed in the rendered document."
+      },
+      {
+        "type": "action",
+        "description": "Export the document as PDF."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the generated PDF is accurate, includes all content and formatted symbols."
+      },
+      {
+        "type": "action",
+        "description": "Save the LaTeX document."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure saved data persists and reloads correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Mermaid Live Diagram Creation and Export",
+    "description": "Test creating diagrams with interactive zoom/pan, applying templates, and exporting diagrams as SVG and PNG.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and navigate to Mermaid Live."
+      },
+      {
+        "type": "action",
+        "description": "Create a new Mermaid diagram using a type-specific template."
+      },
+      {
+        "type": "action",
+        "description": "Edit diagram code and verify canvas updates in real-time."
+      },
+      {
+        "type": "action",
+        "description": "Use zoom and pan controls on the diagram canvas."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm zoom and pan respond smoothly."
+      },
+      {
+        "type": "action",
+        "description": "Export the diagram as SVG format."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify exported SVG is high-resolution and accurate."
+      },
+      {
+        "type": "action",
+        "description": "Export the diagram as PNG format."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm PNG output matches the diagram canvas in quality."
+      },
+      {
+        "type": "action",
+        "description": "Save the Mermaid diagram."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure the diagram is saved to local storage and reloads correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "JSON Prompt Builder Drag & Drop and Block Management",
+    "description": "Verify that users can assemble, edit, and save JSON prompts using drag & drop blocks and form inputs.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open the JSON Prompt Builder."
+      },
+      {
+        "type": "action",
+        "description": "Add prompt blocks from the library by drag and drop into the assembly area."
+      },
+      {
+        "type": "action",
+        "description": "Fill form inputs within blocks to customize JSON properties."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify block assembly reflects a valid JSON structure in real-time."
+      },
+      {
+        "type": "action",
+        "description": "Rearrange blocks using drag and drop."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure the JSON structure updates accordingly without errors."
+      },
+      {
+        "type": "action",
+        "description": "Save the constructed JSON prompt."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the JSON prompt is stored locally and can be reloaded intact."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Document Repository Save, Load, and Delete Documents",
+    "description": "Test reliable save, retrieve, and deletion operations for user documents across all editors with local storage isolation.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and create or open documents in any editor (Markdown, LaTeX, Mermaid, JSON)."
+      },
+      {
+        "type": "action",
+        "description": "Save documents to the repository."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify documents are saved under the correct tool-specific storage keys."
+      },
+      {
+        "type": "action",
+        "description": "List saved documents in the document repository UI."
+      },
+      {
+        "type": "assertion",
+        "description": "Check all documents appear with correct metadata."
+      },
+      {
+        "type": "action",
+        "description": "Load saved documents back into their respective editors."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm content loads accurately without data loss."
+      },
+      {
+        "type": "action",
+        "description": "Delete selected documents from the repository."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure documents are removed from local storage and no longer available in UI."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "AI Assistant Interaction and Chat History Persistence",
+    "description": "Validate that the AI assistant 'Textie' provides responsive help, maintains context awareness, and retains chat history.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open any editor."
+      },
+      {
+        "type": "action",
+        "description": "Invoke the AI assistant 'Textie'."
+      },
+      {
+        "type": "action",
+        "description": "Enter queries or commands to the AI assistant."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify assistant responds with relevant, context-aware answers."
+      },
+      {
+        "type": "action",
+        "description": "Continue conversation with multiple messages."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm chat history is maintained within the session."
+      },
+      {
+        "type": "action",
+        "description": "Reload the application."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify chat history persists after reload and previous messages remain visible."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Settings Update: Theme Configuration and Immediate Application",
+    "description": "Verify users can change the application theme from the settings page and that changes apply immediately and persist on reload.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open the global settings page."
+      },
+      {
+        "type": "action",
+        "description": "Change the theme setting to a different option."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the new theme is applied immediately to the entire application UI."
+      },
+      {
+        "type": "action",
+        "description": "Reload the application."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected theme persists and loads correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Settings Update: Data Backup and Restore",
+    "description": "Ensure backup and restore functionality correctly saves and reintegrates user workspace data including documents and preferences.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in and open the settings page."
+      },
+      {
+        "type": "action",
+        "description": "Trigger a data backup to export current workspace data."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the backup file contains accurate and complete data."
+      },
+      {
+        "type": "action",
+        "description": "Perform changes to documents and preferences."
+      },
+      {
+        "type": "action",
+        "description": "Restore workspace data from the previously saved backup file."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm all documents and settings revert back to backup state without data loss."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Application UI Responsiveness Across Various Devices",
+    "description": "Test that the application UI adapts and performs well on multiple screen sizes and device types including desktop and mobile browsers.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the application on desktop browser at standard resolutions."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI layout is consistent, usable, and visually correct."
+      },
+      {
+        "type": "action",
+        "description": "Open the application on tablet and mobile device emulators."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm UI components resize, collapse, or reorganize appropriately for smaller screens."
+      },
+      {
+        "type": "action",
+        "description": "Perform common actions (login, document editing, AI assistant usage) on mobile."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure performance is acceptable and no functional regressions exist."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Unauthorized Access Restriction",
+    "description": "Verify that all editor pages and document repositories are inaccessible without authentication and redirect to the login page.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open a new browser session without login."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access Markdown Editor URL directly."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm redirection to login page."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access LaTeX Studio URL directly."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm redirection to login page."
+      },
+      {
+        "type": "action",
+        "description": "Try accessing JSON Prompt Builder and Mermaid Live pages similarly."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure access is denied and login prompt shown."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Logout Functionality",
+    "description": "Ensure users can log out successfully, clearing session and redirecting to login page.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in successfully."
+      },
+      {
+        "type": "action",
+        "description": "Click the logout button or link."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user session is cleared."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm redirection to login page occurs."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access protected tools after logout."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure access is denied and login page is shown."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Error Handling: Document Load Failure",
+    "description": "Validate that the system gracefully handles scenarios where loading a saved document fails or data is corrupted.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Manually corrupt saved document data in local storage."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to load corrupted document in any editor."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user is informed of the loading failure with a clear error message."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the application does not crash and the user can continue normal operations."
+      }
+    ]
+  }
+]

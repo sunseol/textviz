@@ -11,6 +11,10 @@ import { history } from '@milkdown/plugin-history';
 import { clipboard } from '@milkdown/plugin-clipboard';
 import { prism } from '@milkdown/plugin-prism';
 import { math } from '@milkdown/plugin-math';
+import * as MathPlugin from '@milkdown/plugin-math';
+
+console.log('[DEBUG-MATH] exports:', MathPlugin);
+console.log('[DEBUG-MATH] keys:', Object.keys(MathPlugin));
 import { diagram } from '@milkdown/plugin-diagram';
 import { slashFactory } from '@milkdown/plugin-slash';
 import { Ctx } from '@milkdown/ctx';
@@ -86,13 +90,22 @@ const MilkdownToolbar: React.FC = () => {
 const MilkdownEditorContent: React.FC<MilkdownEditorProps> = ({ content, onChange }) => {
     const { isDarkMode } = useAppStore();
     const slash = React.useMemo(() => slashFactory('slash'), []);
+    const [loading, getEditor] = useInstance();
+
+    const lastEmittedContent = React.useRef(content);
+
     const editor = useEditor((root) => {
         return Editor.make()
             .config((ctx: Ctx) => {
                 ctx.set(rootCtx, root);
                 ctx.set(defaultValueCtx, content);
+
+                // Configure KaTeX to not throw on error (Removed for test)
+                // try { ctx.inject(...) } catch { ctx.set(...) }
+
                 ctx.get(listenerCtx).markdownUpdated((ctx: Ctx, markdown: string, prevMarkdown: string) => {
                     if (markdown !== prevMarkdown) {
+                        lastEmittedContent.current = markdown;
                         onChange(markdown);
                     }
                 });
@@ -108,6 +121,20 @@ const MilkdownEditorContent: React.FC<MilkdownEditorProps> = ({ content, onChang
             .use(diagram)
             .use(slash);
     }, []);
+
+    React.useEffect(() => {
+        if (loading || !content) return;
+
+        if (content !== lastEmittedContent.current) {
+            const instance = getEditor();
+            if (instance) {
+                import('@milkdown/utils').then(({ replaceAll }) => {
+                    instance.action(replaceAll(content));
+                    lastEmittedContent.current = content;
+                });
+            }
+        }
+    }, [content, loading, getEditor]);
 
     return (
         <div className="milkdown-editor-wrapper flex h-full w-full flex-col overflow-hidden rounded-xl bg-white dark:bg-neutral-900">

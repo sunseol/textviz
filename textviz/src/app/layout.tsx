@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Bona_Nova_SC } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { TextieChat } from "@/components/ai/TextieChat";
+
+const GA_TRACKING_ID = "G-DW8FS4901Y";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -52,6 +55,19 @@ export default function RootLayout({
         className={`${geistMono.variable} ${bonaNovaSC.variable} antialiased`}
         suppressHydrationWarning={true}
       >
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_TRACKING_ID}');
+          `}
+        </Script>
         <ThemeProvider />
         <TextieChat />
         {children}

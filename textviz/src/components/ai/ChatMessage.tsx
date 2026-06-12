@@ -6,13 +6,61 @@ import rehypeKatex from 'rehype-katex';
 import { cn } from '@/lib/utils';
 import { Bot, User } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import { DocumentType } from '@/store/useDocumentStore';
+import type { Message } from 'ai';
+import type { DocumentType } from '@/store/useDocumentStore';
 
 interface ChatMessageProps {
-    role: 'user' | 'assistant' | 'system' | 'data';
+    role: Message['role'];
     content: string;
     onAction?: (action: 'copy' | 'insert' | 'navigate', content: string) => void;
     activeDocType?: DocumentType;
+}
+
+type NavSuggestionPayload = {
+    readonly prompt: string;
+    readonly type: DocumentType;
+};
+
+type MarkdownCodeProps = React.HTMLAttributes<HTMLElement> & {
+    readonly inline?: boolean;
+    readonly node?: unknown;
+};
+
+const languageToDocumentType: Record<string, DocumentType> = {
+    mermaid: 'mermaid',
+    markdown: 'markdown',
+    md: 'markdown',
+    latex: 'latex',
+    tex: 'latex',
+    json: 'json-builder',
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isDocumentType(value: unknown): value is DocumentType {
+    return value === 'markdown' || value === 'latex' || value === 'mermaid' || value === 'json-builder';
+}
+
+function parseNavSuggestion(content: string): NavSuggestionPayload | null {
+    if (!content.startsWith('[NAV_SUGGESTION]')) {
+        return null;
+    }
+
+    try {
+        const parsed: unknown = JSON.parse(content.replace('[NAV_SUGGESTION]', ''));
+        if (!isRecord(parsed) || !isDocumentType(parsed.type) || typeof parsed.prompt !== 'string') {
+            return null;
+        }
+
+        return {
+            prompt: parsed.prompt,
+            type: parsed.type,
+        };
+    } catch {
+        return null;
+    }
 }
 
 export function ChatMessage({ role, content, onAction, activeDocType }: ChatMessageProps) {
@@ -23,34 +71,29 @@ export function ChatMessage({ role, content, onAction, activeDocType }: ChatMess
         // Could add toast here
     };
 
-    const isNavSuggestion = content.startsWith('[NAV_SUGGESTION]');
+    const navSuggestion = parseNavSuggestion(content);
 
-    if (isNavSuggestion) {
-        try {
-            const payload = JSON.parse(content.replace('[NAV_SUGGESTION]', ''));
-            const { prompt, type } = payload;
+    if (navSuggestion) {
+        const { prompt, type } = navSuggestion;
 
-            return (
-                <div className="flex w-full gap-3 p-4">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-100 shadow-sm dark:border-blue-800 dark:bg-blue-900/30">
-                        <Bot className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                        <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                            그 작업을 수행하려면 <strong>{type === 'mermaid' ? '다이어그램' : '마크다운'}</strong> 에디터로 이동해야 합니다.
-                        </p>
-                        <button
-                            onClick={() => onAction && onAction('navigate', JSON.stringify({ type, prompt }))}
-                            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98]"
-                        >
-                            🚀 에디터로 이동하여 시작하기
-                        </button>
-                    </div>
+        return (
+            <div className="flex w-full gap-3 p-4">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-100 shadow-sm dark:border-blue-800 dark:bg-blue-900/30">
+                    <Bot className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
-            );
-        } catch (e) {
-            // Fallback for parsing error
-        }
+                <div className="flex flex-col gap-3 rounded-2xl rounded-tl-none border border-neutral-100 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                        그 작업을 수행하려면 <strong>{type === 'mermaid' ? '다이어그램' : '마크다운'}</strong> 에디터로 이동해야 합니다.
+                    </p>
+                    <button
+                        onClick={() => onAction?.('navigate', JSON.stringify({ type, prompt }))}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-md hover:shadow-blue-500/20 active:scale-[0.98]"
+                    >
+                        에디터로 이동하여 시작하기
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -75,23 +118,21 @@ export function ChatMessage({ role, content, onAction, activeDocType }: ChatMess
                     components={{
                         // Unwrap pre to prevent default browser styling from forcing width
                         pre: ({ children }) => <>{children}</>,
-                        p: ({ node, ...props }) => <p className="mb-2 last:mb-0 break-words whitespace-pre-wrap" {...props} />,
-                        a: ({ node, ...props }) => <a className="text-blue-500 hover:underline" {...props} />,
-                        code: ({ node, inline, className, children, ...props }: any) => {
+                        p: ({ node, ...props }) => {
+                            void node;
+                            return <p className="mb-2 last:mb-0 break-words whitespace-pre-wrap" {...props} />;
+                        },
+                        a: ({ node, ...props }) => {
+                            void node;
+                            return <a className="text-blue-500 hover:underline" {...props} />;
+                        },
+                        code: ({ node, inline, className, children, ...props }: MarkdownCodeProps) => {
+                            void node;
                             const match = /language-(\w+)/.exec(className || '');
                             const language = match ? match[1] : '';
                             const codeContent = String(children).replace(/\n$/, '');
 
-                            // Map language to DocType/Route
-                            const langMap: Record<string, DocumentType> = {
-                                'mermaid': 'mermaid',
-                                'markdown': 'markdown',
-                                'md': 'markdown',
-                                'latex': 'latex',
-                                'tex': 'latex',
-                                'json': 'json-builder'
-                            };
-                            const targetType = langMap[language];
+                            const targetType = languageToDocumentType[language];
 
                             // Action Logic
                             const isContextMatch = activeDocType === targetType;

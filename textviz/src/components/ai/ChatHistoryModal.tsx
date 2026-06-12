@@ -3,8 +3,6 @@ import { useChatHistoryStore, ChatSession } from '@/store/useChatHistoryStore';
 import { Message } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Trash2, MessageSquare, Clock, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useLanguageStore } from '@/store/useLanguageStore';
 
 interface ChatHistoryModalProps {
     isOpen: boolean;
@@ -14,7 +12,6 @@ interface ChatHistoryModalProps {
 
 export function ChatHistoryModal({ isOpen, onClose, onRestore }: ChatHistoryModalProps) {
     const { sessions, deleteSession, clearHistory } = useChatHistoryStore();
-    const { t } = useLanguageStore();
 
     if (!isOpen) return null;
 

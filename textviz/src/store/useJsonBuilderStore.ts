@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { PromptBlock } from '@/lib/types';
+import type { PromptBlock, PromptParameterValue } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface JsonBuilderStore {
@@ -11,7 +11,7 @@ interface JsonBuilderStore {
   addBlockToCanvas: (block: PromptBlock) => void;
   removeBlockFromCanvas: (blockId: string) => void;
   reorderCanvasBlocks: (activeId: string, overId: string) => void;
-  updateBlockParameter: (blockId: string, key: string, value: any) => void;
+  updateBlockParameter: (blockId: string, key: string, value: PromptParameterValue) => void;
   selectBlock: (blockId: string | null) => void;
   
   // Library actions

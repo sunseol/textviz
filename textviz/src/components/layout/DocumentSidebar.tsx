@@ -7,6 +7,7 @@ import { useDocumentStore, DocumentType } from "@/store/useDocumentStore";
 import { useLanguageStore } from "@/store/useLanguageStore";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useHasMounted } from "@/hooks/useHasMounted";
 
 type DocKind = "markdown" | "latex" | "mermaid";
 
@@ -52,7 +53,7 @@ function getWordCount(content: string): number {
 }
 
 export function DocumentSidebar({ active }: DocumentSidebarProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHasMounted();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const editInputRef = useRef<HTMLInputElement>(null);
@@ -68,8 +69,6 @@ export function DocumentSidebar({ active }: DocumentSidebarProps) {
   const activeDocumentId = useDocumentStore((state) => state.activeDocumentId);
   const setActiveDocument = useDocumentStore((state) => state.setActiveDocument);
   const { t } = useLanguageStore();
-
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (editingId && editInputRef.current) {

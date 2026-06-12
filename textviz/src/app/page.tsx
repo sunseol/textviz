@@ -2,16 +2,9 @@
 
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { Header } from '@/components/layout/Header';
-import { Button } from '@/components/ui/button'; // Assuming you have a Button component, if not I'll use raw generic button or check components.
-// Checking recent files component usage? Maybe remove it for main landing or keep at bottom? User said "CTA focused". I'll keep it at bottom as "Jump back in".
 import { RecentFiles } from '@/components/home/RecentFiles';
 import Link from 'next/link';
 import Image from 'next/image';
-// I'll stick to standard Tailwind transitions to be safe, or check package.json first.
-// I'll check package.json for framer-motion.
-// Actually, I'll just use standard CSS animations for now to avoid dependency issues unless I know it's there.
-// User demanded "high wow factor", "modern visual".
-// I'll use safe Tailwind animate-in.
 
 export default function Home() {
   const { t } = useLanguageStore();
@@ -39,7 +32,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Background decoration */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl -z-10 opacity-40 dark:opacity-20 pointer-events-none">
             <div className="absolute top-[20%] left-[20%] w-72 h-72 bg-purple-200 dark:bg-purple-900/30 rounded-full blur-[128px]" />
             <div className="absolute top-[30%] right-[20%] w-72 h-72 bg-blue-200 dark:bg-blue-900/30 rounded-full blur-[128px]" />

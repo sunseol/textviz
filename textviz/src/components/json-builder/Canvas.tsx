@@ -14,7 +14,6 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
@@ -22,8 +21,17 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/lib/utils';
+import type { PromptBlock } from '@/lib/types';
 
-function SortableItem({ id, block, isSelected, onSelect, onRemove }: any) {
+type SortableItemProps = {
+  readonly id: string;
+  readonly block: PromptBlock;
+  readonly isSelected: boolean;
+  readonly onSelect: (blockId: string) => void;
+  readonly onRemove: (blockId: string) => void;
+};
+
+function SortableItem({ id, block, isSelected, onSelect, onRemove }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -84,8 +92,8 @@ export function BuilderCanvas() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      reorderCanvasBlocks(active.id as string, over!.id as string);
+    if (over && active.id !== over.id) {
+      reorderCanvasBlocks(String(active.id), String(over.id));
     }
   };
 

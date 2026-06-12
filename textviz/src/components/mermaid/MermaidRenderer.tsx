@@ -18,7 +18,7 @@ export function MermaidRenderer({ content }: MermaidRendererProps) {
     mermaid.initialize({
       startOnLoad: false,
       theme: 'default',
-      securityLevel: 'loose',
+      securityLevel: 'strict',
     });
   }, []);
 
@@ -31,7 +31,7 @@ export function MermaidRenderer({ content }: MermaidRendererProps) {
         ref.current.innerHTML = '';
 
         // Clean up content: Remove ```mermaid wrapper if present and backticks
-        let cleanContent = content
+        const cleanContent = content
           .replace(/```mermaid/g, '')
           .replace(/```/g, '')
           .trim();
@@ -124,7 +124,7 @@ export function MermaidRenderer({ content }: MermaidRendererProps) {
         doubleClick={{ disabled: true }}
         panning={{ velocityDisabled: true }}
       >
-        {({ zoomIn, zoomOut, resetTransform, centerView }) => (
+        {({ zoomIn, zoomOut, centerView }) => (
           <>
             <div className="absolute right-4 top-4 z-20 flex flex-col gap-2 rounded-lg border border-neutral-200/70 bg-white/90 p-2 shadow-sm backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
               <button

@@ -1,26 +1,12 @@
 import { create } from 'zustand';
 import { createClient } from '@/lib/supabase/client';
+import { getSupabaseConfig } from '@/lib/supabase/env';
 import { v4 as uuidv4 } from 'uuid';
+import { getDefaultTitle, defaultTemplates } from './document/templates';
+import { clearLocalDocs, getLocalActiveId, getLocalDocs, saveLocalActiveId, saveLocalDocs } from './document/localDocuments';
+import type { Document, DocumentDbUpdate, DocumentType, DocumentUpdate, RemoteDocumentRow } from './document/types';
 
-export type DocumentType = 'markdown' | 'latex' | 'mermaid' | 'json-builder';
-
-export interface Document {
-  id: string;
-  type: DocumentType;
-  title: string;
-  content: string;
-  createdAt: number;
-  updatedAt: number;
-  user_id?: string;
-  isLocal?: boolean;
-  metadata?: {
-    language?: string; // 'ko', 'en'
-    intent?: string; // 'report', 'blog', 'email', 'creative'
-    deadline?: string;
-    tone?: string;
-    description?: string; // Summary or description of the doc
-  };
-}
+export type { Document, DocumentType } from './document/types';
 
 interface DocumentStore {
   documents: Document[];
@@ -32,98 +18,14 @@ interface DocumentStore {
   setIsInitialized: (isInitialized: boolean) => void;
   addDocument: (type: DocumentType) => Promise<Document | void>;
   deleteDocument: (id: string) => Promise<void>;
-  updateDocument: (id: string, updates: { content?: string; title?: string; metadata?: any }) => Promise<void>;
+  updateDocument: (id: string, updates: DocumentUpdate) => Promise<void>;
   setActiveDocument: (id: string) => void;
   getActiveDocument: () => Document | null;
   getDocumentsByType: (type: DocumentType) => Document[];
   syncLocalDocuments: () => Promise<number>; // Returns count of synced docs
 }
 
-const defaultTemplates: Record<DocumentType, string> = {
-  markdown: '# Welcome to Markdown Editor\n\nStart typing here...',
-  latex: String.raw`\title{Mathematical Formulas}
-\author{TextViz User}
-\maketitle
-
-\section{Basic Equations}
-
-The famous mass-energy equivalence:
-$$ E = mc^2 $$
-
-The quadratic formula for $ax^2 + bx + c = 0$:
-$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
-
-\section{Calculus}
-
-The derivative of a function:
-$$ \frac{d}{dx}[f(x)] = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} $$
-
-Integration:
-$$ \int_a^b f(x)\,dx = F(b) - F(a) $$
-
-\section{Linear Algebra}
-
-A matrix equation:
-$$ \begin{pmatrix} a & b \\ c & d \end{pmatrix} \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} e \\ f \end{pmatrix} $$
-
-\section{Summations and Products}
-
-Summation:
-$$ \sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6} $$
-
-Product notation:
-$$ \prod_{i=1}^{n} i = n! $$`,
-  mermaid: `graph TD
-  A[Start] --> B{Is it?}
-  B -- Yes --> C[OK]
-  C --> D[Rethink]
-  D --> B
-  B -- No --> E[End]`,
-  'json-builder': '{"prompt":"","blocks":[]}',
-};
-
-const LOCAL_STORAGE_KEY = 'textviz-documents';
-
-const getDefaultTitle = (type: DocumentType, documents: Document[]): string => {
-  const extension = type === 'markdown' ? 'md' : type === 'latex' ? 'tex' : type === 'mermaid' ? 'mmd' : 'json';
-  const prefix = 'Untitled-';
-
-  const existingNumbers = documents
-    .filter(doc => doc.title.startsWith(prefix) && doc.title.endsWith(`.${extension}`))
-    .map(doc => {
-      const match = doc.title.match(/Untitled-(\d+)\./);
-      return match ? parseInt(match[1], 10) : 0;
-    });
-
-  const maxNumber = Math.max(0, ...existingNumbers);
-  return `${prefix}${maxNumber + 1}.${extension}`;
-};
-
-// Helper for LocalStorage
-const getLocalDocs = (): Document[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
-};
-
-const getLocalActiveId = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('textviz-active-doc');
-};
-
-const saveLocalDocs = (docs: Document[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(docs));
-};
-
-const saveLocalActiveId = (id: string | null) => {
-  if (typeof window === 'undefined') return;
-  if (id) {
-    localStorage.setItem('textviz-active-doc', id);
-  } else {
-    localStorage.removeItem('textviz-active-doc');
-  }
-};
+const getOptionalSupabaseClient = () => getSupabaseConfig() ? createClient() : null;
 
 export const useDocumentStore = create<DocumentStore>((set, get) => ({
   documents: [],
@@ -135,15 +37,16 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
   fetchDocuments: async () => {
     set({ isLoading: true });
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = getOptionalSupabaseClient();
+    const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
-    if (user) {
+    if (supabase && user) {
       // Remote Mode
       const { data, error } = await supabase
         .from('documents')
         .select('*')
-        .order('updated_at', { ascending: false });
+        .order('updated_at', { ascending: false })
+        .returns<RemoteDocumentRow[]>();
 
       if (error) {
         console.error('Error fetching documents:', error);
@@ -153,13 +56,14 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
       const documents: Document[] = data.map(doc => ({
         id: doc.id,
-        type: doc.type as DocumentType,
+        type: doc.type,
         title: doc.title,
         content: doc.content,
         createdAt: new Date(doc.created_at).getTime(),
         updatedAt: new Date(doc.updated_at).getTime(),
         user_id: doc.user_id,
         isLocal: false,
+        metadata: doc.metadata ?? undefined,
       }));
 
       set({ documents, isLoading: false, isInitialized: true });
@@ -179,18 +83,15 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   },
 
   addDocument: async (type: DocumentType) => {
-    console.log('[useDocumentStore] addDocument called with type:', type);
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    console.log('[useDocumentStore] User authenticated:', !!user);
+    const supabase = getOptionalSupabaseClient();
+    const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
     const documents = get().documents;
     const typeDocuments = documents.filter(doc => doc.type === type);
     const title = getDefaultTitle(type, typeDocuments);
     const content = defaultTemplates[type];
 
-    if (user) {
-      console.log('[useDocumentStore] Attempting Remote Creation');
+    if (supabase && user) {
       // Add to Supabase
       const { data, error } = await supabase
         .from('documents')
@@ -202,23 +103,23 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
           metadata: {},
         })
         .select()
-        .single();
+        .single<RemoteDocumentRow>();
 
       if (error) {
         console.error('[useDocumentStore] Error creating remote document:', error);
         return;
       }
-      console.log('[useDocumentStore] Remote document created:', data);
 
       const newDoc: Document = {
         id: data.id,
-        type: data.type as DocumentType,
+        type: data.type,
         title: data.title,
         content: data.content,
         createdAt: new Date(data.created_at).getTime(),
         updatedAt: new Date(data.updated_at).getTime(),
         user_id: data.user_id,
         isLocal: false,
+        metadata: data.metadata ?? undefined,
       };
 
       set({
@@ -227,7 +128,6 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
       });
       return newDoc;
     } else {
-      console.log('[useDocumentStore] Attempting Local Creation');
       // Add to Local
       const newDoc: Document = {
         id: uuidv4(),
@@ -247,7 +147,6 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
         const newDocuments = exists ? currentLocalDocs : [newDoc, ...currentLocalDocs];
 
         saveLocalDocs(newDocuments);
-        console.log('[useDocumentStore] Local document saved:', newDoc);
 
         set({
           documents: newDocuments,
@@ -263,10 +162,10 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
   },
 
   deleteDocument: async (id: string) => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = getOptionalSupabaseClient();
+    const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
-    if (user) {
+    if (supabase && user) {
       // If it happens to be a lingering local doc (shouldn't happen in strict mode but possible),
       // we should check. But assuming we only show remote docs when logged in (except during sync),
       // we can try deleting from remote.
@@ -298,7 +197,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     });
   },
 
-  updateDocument: async (id: string, updates: { content?: string; title?: string; metadata?: any }) => {
+  updateDocument: async (id: string, updates: DocumentUpdate) => {
     // 1. Optimistic Update
     const currentDocuments = get().documents;
     const docIndex = currentDocuments.findIndex(d => d.id === id);
@@ -317,14 +216,16 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     set({ documents: newDocuments });
 
     // 2. Persist
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = getOptionalSupabaseClient();
+    const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
-    if (user && !newDoc.isLocal) {
-      const dbUpdates: any = { updated_at: new Date().toISOString() };
-      if (updates.content !== undefined) dbUpdates.content = updates.content;
-      if (updates.title !== undefined) dbUpdates.title = updates.title;
-      if (updates.metadata !== undefined) dbUpdates.metadata = updates.metadata;
+    if (supabase && user && !newDoc.isLocal) {
+      const dbUpdates: DocumentDbUpdate = {
+        updated_at: new Date().toISOString(),
+        ...(updates.content !== undefined ? { content: updates.content } : {}),
+        ...(updates.title !== undefined ? { title: updates.title } : {}),
+        ...(updates.metadata !== undefined ? { metadata: updates.metadata } : {}),
+      };
 
       const { error } = await supabase
         .from('documents')
@@ -345,9 +246,9 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
     const localDocs = getLocalDocs();
     if (localDocs.length === 0) return 0;
 
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return 0;
+    const supabase = getOptionalSupabaseClient();
+    const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+    if (!supabase || !user) return 0;
 
     let syncedCount = 0;
 
@@ -370,7 +271,7 @@ export const useDocumentStore = create<DocumentStore>((set, get) => ({
 
     if (syncedCount > 0) {
       if (syncedCount === localDocs.length) {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        clearLocalDocs();
       }
 
       await get().fetchDocuments(); // Refresh from server

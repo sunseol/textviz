@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getErrorMessage } from '@/lib/errors';
+import { getSupabaseConfig } from '@/lib/supabase/env';
 
 interface LoginDialogProps {
     isOpen: boolean;
@@ -16,7 +18,7 @@ export function LoginDialog({ isOpen, onClose }: LoginDialogProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [mode, setMode] = useState<'login' | 'signup'>('login');
-    const supabase = createClient();
+    const supabase = React.useMemo(() => getSupabaseConfig() ? createClient() : null, []);
 
     if (!isOpen) return null;
 
@@ -27,6 +29,10 @@ export function LoginDialog({ isOpen, onClose }: LoginDialogProps) {
 
         try {
             if (mode === 'login') {
+                if (!supabase) {
+                    setError('Login is unavailable because Supabase is not configured.');
+                    return;
+                }
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
@@ -34,6 +40,10 @@ export function LoginDialog({ isOpen, onClose }: LoginDialogProps) {
                 if (error) throw error;
                 onClose();
             } else {
+                if (!supabase) {
+                    setError('Sign up is unavailable because Supabase is not configured.');
+                    return;
+                }
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -44,8 +54,8 @@ export function LoginDialog({ isOpen, onClose }: LoginDialogProps) {
                 onClose();
                 alert('Check your email for confirmation link!');
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -131,7 +141,7 @@ export function LoginDialog({ isOpen, onClose }: LoginDialogProps) {
                         <div className="mt-4 text-center text-xs text-neutral-500">
                             {mode === 'login' ? (
                                 <>
-                                    Don't have an account?{' '}
+                                    Don&apos;t have an account?{' '}
                                     <button
                                         onClick={() => setMode('signup')}
                                         className="font-medium text-blue-500 hover:underline"

@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDocumentStore } from '@/store/useDocumentStore';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import Link from 'next/link';
 import { FileText, Sigma, GitGraph, Clock } from 'lucide-react';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 export function RecentFiles() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHasMounted();
   const documents = useDocumentStore((state) => state.documents);
   const fetchDocuments = useDocumentStore((state) => state.fetchDocuments);
   const setActiveDocument = useDocumentStore((state) => state.setActiveDocument);
   const { t } = useLanguageStore();
 
   useEffect(() => {
-    setMounted(true);
     fetchDocuments();
   }, [fetchDocuments]);
 

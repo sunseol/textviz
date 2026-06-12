@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Milkdown, MilkdownProvider, useEditor, useInstance } from '@milkdown/react';
-import { Editor, rootCtx, defaultValueCtx } from '@milkdown/core';
+import { Editor, rootCtx, defaultValueCtx, type CmdKey } from '@milkdown/core';
 import { commonmark } from '@milkdown/preset-commonmark';
 import { gfm } from '@milkdown/preset-gfm';
 import { nord } from '@milkdown/theme-nord';
@@ -11,14 +11,9 @@ import { history } from '@milkdown/plugin-history';
 import { clipboard } from '@milkdown/plugin-clipboard';
 import { prism } from '@milkdown/plugin-prism';
 import { math } from '@milkdown/plugin-math';
-import * as MathPlugin from '@milkdown/plugin-math';
-
-console.log('[DEBUG-MATH] exports:', MathPlugin);
-console.log('[DEBUG-MATH] keys:', Object.keys(MathPlugin));
 import { diagram } from '@milkdown/plugin-diagram';
 import { slashFactory } from '@milkdown/plugin-slash';
 import { Ctx } from '@milkdown/ctx';
-import { useAppStore } from '@/store/useAppStore';
 import {
     toggleStrongCommand,
     toggleEmphasisCommand,
@@ -53,10 +48,10 @@ const ToolbarButton: React.FC<{
 );
 
 const MilkdownToolbar: React.FC = () => {
-    const [loading, getEditor] = useInstance();
+    const [, getEditor] = useInstance();
 
     const runCommand = React.useCallback(
-        (command: { key: any }, payload?: any) => {
+        <T,>(command: { readonly key: CmdKey<T> }, payload?: T) => {
             const editor = getEditor();
             if (!editor || !command?.key) return;
             editor.action(callCommand(command.key, payload));
@@ -88,13 +83,12 @@ const MilkdownToolbar: React.FC = () => {
 };
 
 const MilkdownEditorContent: React.FC<MilkdownEditorProps> = ({ content, onChange }) => {
-    const { isDarkMode } = useAppStore();
     const slash = React.useMemo(() => slashFactory('slash'), []);
     const [loading, getEditor] = useInstance();
 
     const lastEmittedContent = React.useRef(content);
 
-    const editor = useEditor((root) => {
+    useEditor((root) => {
         return Editor.make()
             .config((ctx: Ctx) => {
                 ctx.set(rootCtx, root);

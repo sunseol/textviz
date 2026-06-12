@@ -2,7 +2,6 @@
 
 import React, { useRef } from 'react';
 import { Header } from '@/components/layout/Header';
-import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { ResizableSplitPane } from '@/components/ui/ResizableSplitPane';
 import { MonacoEditorWrapper } from '@/components/ui/MonacoEditorWrapper';
 import { MermaidRenderer } from '@/components/mermaid/MermaidRenderer';

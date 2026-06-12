@@ -62,16 +62,16 @@ export function PropertyEditor() {
               {Object.keys(selectedBlock.parameters).length === 0 ? (
                 <p className="text-sm text-muted-foreground italic">{t.jsonBuilder.noParameters}</p>
               ) : (
-                Object.entries(selectedBlock.parameters).map(([key, value]) => (
-                  <div key={key} className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium capitalize">{key}</label>
-                    <input
-                      type="text"
-                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      value={value}
-                      onChange={(e) => updateBlockParameter(selectedBlock.id, key, e.target.value)}
-                    />
-                  </div>
+	                Object.entries(selectedBlock.parameters).map(([key, value]) => (
+	                  <div key={key} className="flex flex-col gap-1.5">
+	                    <label className="text-sm font-medium capitalize">{key}</label>
+	                    <input
+	                      type="text"
+	                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+	                      value={String(value ?? '')}
+	                      onChange={(e) => updateBlockParameter(selectedBlock.id, key, e.target.value)}
+	                    />
+	                  </div>
                 ))
               )}
             </div>

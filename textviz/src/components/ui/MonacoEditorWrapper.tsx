@@ -5,9 +5,7 @@ import Editor, { EditorProps, OnMount } from '@monaco-editor/react';
 import { useAppStore } from '@/store/useAppStore';
 import { Loader2 } from 'lucide-react';
 
-interface MonacoEditorWrapperProps extends EditorProps {
-  // Additional custom props if needed
-}
+type MonacoEditorWrapperProps = EditorProps;
 
 export function MonacoEditorWrapper({
   options,

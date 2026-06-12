@@ -1,15 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 export function ThemeProvider() {
     const { isDarkMode } = useAppStore();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useHasMounted();
 
     // Effect to apply theme based on store state
     useEffect(() => {

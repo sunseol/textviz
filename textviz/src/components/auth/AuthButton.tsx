@@ -1,55 +1,23 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { LogOut, User as UserIcon, RefreshCw } from 'lucide-react';
-import { useLanguageStore } from '@/store/useLanguageStore';
 import { useDocumentStore } from '@/store/useDocumentStore';
 import { useRouter } from 'next/navigation';
+import { getSupabaseConfig } from '@/lib/supabase/env';
 
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [isSyncing, setIsSyncing] = useState(false);
-    const supabase = createClient();
-    const { t } = useLanguageStore();
+    const supabase = useMemo(() => getSupabaseConfig() ? createClient() : null, []);
     const { fetchDocuments, syncLocalDocuments } = useDocumentStore();
     const router = useRouter();
 
-    useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            setLoading(false);
-            if (user) {
-                // Check if we need to sync
-                handleSync();
-                fetchDocuments();
-            } else {
-                useDocumentStore.setState({ isInitialized: true });
-            }
-        };
-
-        getUser();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setUser(session?.user ?? null);
-            if (session?.user) {
-                await handleSync();
-                fetchDocuments();
-            } else {
-                // Clear documents on logout to avoid showing stale data, then fetch local if any (though local mode handles this)
-                useDocumentStore.setState({ documents: [], activeDocumentId: null, isInitialized: true });
-                fetchDocuments(); // Will fetch local docs
-            }
-        });
-
-        return () => subscription.unsubscribe();
-    }, [fetchDocuments]);
-
-    const handleSync = async () => {
+    const handleSync = useCallback(async () => {
         setIsSyncing(true);
         try {
             const count = await syncLocalDocuments();
@@ -63,13 +31,51 @@ export function AuthButton() {
         } finally {
             setIsSyncing(false);
         }
-    };
+    }, [syncLocalDocuments]);
+
+    useEffect(() => {
+        if (!supabase) {
+            setLoading(false);
+            useDocumentStore.setState({ isInitialized: true });
+            return;
+        }
+
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            setLoading(false);
+            if (user) {
+                await handleSync();
+                fetchDocuments();
+            } else {
+                useDocumentStore.setState({ isInitialized: true });
+            }
+        };
+
+        void getUser();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            setUser(session?.user ?? null);
+            if (session?.user) {
+                await handleSync();
+                fetchDocuments();
+            } else {
+                useDocumentStore.setState({ documents: [], activeDocumentId: null, isInitialized: true });
+                fetchDocuments();
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [fetchDocuments, handleSync, supabase]);
 
     const handleLogin = () => {
         router.push('/login');
     };
 
     const handleLogout = async () => {
+        if (!supabase) {
+            return;
+        }
         await supabase.auth.signOut();
     };
 

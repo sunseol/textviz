@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useAppStore } from '@/store/useAppStore';
+import { getErrorMessage } from '@/lib/errors';
+import { getSupabaseConfig } from '@/lib/supabase/env';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -16,7 +18,7 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [mode, setMode] = useState<'login' | 'signup'>('login');
     const [isEmailSent, setIsEmailSent] = useState(false);
-    const supabase = createClient();
+    const supabase = React.useMemo(() => getSupabaseConfig() ? createClient() : null, []);
     const router = useRouter();
     const { t, language, setLanguage } = useLanguageStore();
     const { isDarkMode, toggleDarkMode } = useAppStore();
@@ -29,6 +31,11 @@ export default function LoginPage() {
     };
 
     const handleGoogleLogin = async () => {
+        if (!supabase) {
+            setError('Login is unavailable because Supabase is not configured.');
+            return;
+        }
+
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
@@ -44,6 +51,10 @@ export default function LoginPage() {
 
         try {
             if (mode === 'login') {
+                if (!supabase) {
+                    setError('Login is unavailable because Supabase is not configured.');
+                    return;
+                }
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
@@ -51,6 +62,10 @@ export default function LoginPage() {
                 if (error) throw error;
                 router.push('/');
             } else {
+                if (!supabase) {
+                    setError('Sign up is unavailable because Supabase is not configured.');
+                    return;
+                }
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -63,8 +78,8 @@ export default function LoginPage() {
                 if (error) throw error;
                 setIsEmailSent(true);
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }

@@ -4,7 +4,6 @@ import React from 'react';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { useDocumentStore } from '@/store/useDocumentStore';
 import { Header } from '@/components/layout/Header';
-import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import { BlockLibrary } from '@/components/json-builder/BlockLibrary';
 import { BuilderCanvas } from '@/components/json-builder/Canvas';
 import { PropertyEditor } from '@/components/json-builder/PropertyEditor';

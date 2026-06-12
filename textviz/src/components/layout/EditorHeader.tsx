@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguageStore } from '@/store/useLanguageStore';
-import { cn } from '@/lib/utils';
-import { Check, Pencil, Menu } from 'lucide-react';
+import { Pencil, Menu } from 'lucide-react';
 import { generateTitle } from '@/app/actions/generateTitle';
 import { useDocumentStore } from '@/store/useDocumentStore';
 
@@ -66,7 +65,6 @@ export function EditorHeader({ title, typeLabel, onTitleChange, onMobileMenuClic
         const hasContent = activeDoc?.content && activeDoc.content.length > 20;
 
         if (isUntitled && hasContent) {
-            console.log('[EditorHeader] Triggering Auto-Title...');
             setEditName("Generating..."); // Optimistic UI
 
             // Generate title in background

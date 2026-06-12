@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useDocumentStore, Document } from '@/store/useDocumentStore';
 import { useLanguageStore } from '@/store/useLanguageStore';
 import { Header } from '@/components/layout/Header';
+import { useHasMounted } from '@/hooks/useHasMounted';
 import {
     FileText,
     Sigma,
@@ -15,14 +15,13 @@ import {
     Trash2,
     Clock,
     File,
-    Filter
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 export default function RepositoryPage() {
     const router = useRouter();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useHasMounted();
     const [searchQuery, setSearchQuery] = useState("");
     const [typeFilter, setTypeFilter] = useState<'all' | 'markdown' | 'latex' | 'mermaid' | 'json-builder'>('all');
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -31,7 +30,6 @@ export default function RepositoryPage() {
     const { t } = useLanguageStore();
 
     useEffect(() => {
-        setMounted(true);
         fetchDocuments();
     }, [fetchDocuments]);
 
